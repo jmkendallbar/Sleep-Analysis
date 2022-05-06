@@ -1,0 +1,433 @@
+---
+title: "Sleep Scoring Plots"
+author: "Jessica Kendall-Bar"
+date: "6/5/2020"
+output: pdf_document
+---
+
+#Setup
+```{r Setup}
+library(ggplot2)
+library("car")
+library("lubridate") #for interval function
+library(here)
+library(stringr)
+stats_output <- list()
+
+ScoringData<-read.csv(here("Data","test12_Wednesday_Scoring_All_Stats_and_Stages.csv"))
+ScoringData$Stage <- as.factor(ScoringData$Stage)
+```
+
+#Times in R Format
+```{r}
+#Code to add Date/Times in R format
+
+matlab2POS = function(x, timez = "GMT") {
+  days = x - 719529 # 719529 = days from 1-1-0000 to 1-1-1970
+  secs = days * 86400 # 86400 seconds in a day
+  
+  return(as.POSIXct(strftime(as.POSIXct(secs, origin = '1970-1-1',
+                                        tz = 'UTC'), format = '%Y-%m-%d %H:%M:%S',
+                             tz = 'UTC', usetz = FALSE), tz = timez))
+}
+ScoringData$R.Start.Time<-matlab2POS(ScoringData$MATLAB.Start.Time)
+ScoringData$R.End.Time<-matlab2POS(ScoringData$MATLAB.End.Time)
+ScoringData2 <- ScoringData[!is.na(ScoringData$R.End.Time),] #Deleting blank columns with NA's
+```
+
+```{r}
+#subset data to separate Land and Water datasets and also separate out scoring stages with motion artifacts
+ScoringData_Land <- subset(ScoringData2,Land.v.Water=="LAND")
+ScoringData_Water <- subset(ScoringData2,Land.v.Water=="WATER")
+ScoringData_Land_NoMotion <- subset(ScoringData_Land,Stage %in% c("WAKE","CALM","INTERMED","SWS","REM"))
+ScoringData_Water_NoMotion <- subset(ScoringData_Water,Stage %in% c("WAKE","CALM","INTERMED","SWS","REM"))
+
+ScoringData_Land_NoMotion_filtered <- subset(ScoringData_Land_NoMotion, Mean.LEEG1.DP < 1000)
+ScoringData_Water_NoMotion_filtered <- subset(ScoringData_Water_NoMotion, Mean.LEEG1.DP < 1000)
+ScoringData2_filtered <- subset(ScoringData2, Mean.LEEG1.DP < 1000) #filter out motion artifacts
+ScoringData2_filtered <- subset(ScoringData2_filtered, Mean.HR < 130) #filter out high HR artifacts
+
+ScoringData2_Breaths <- subset(ScoringData2_filtered,Stage %in% c("APNEA","EUPNEA"))
+ScoringData2_WithoutBreaths <- subset(ScoringData2_filtered,Stage %in% c("WAKE","CALM","INTERMED","SWS","REM","JOLT","MVMT"))
+ScoringData2_NoMotion_filtered <- subset(ScoringData2_filtered,Stage %in% c("WAKE","CALM","INTERMED","SWS","REM"))
+```
+
+```{r}
+# Finding out % of episodes of sleep which start and end during apneas for land and water
+# Descriptive statistics
+
+Apneas_Land       <- subset(ScoringData_Land,Stage %in% c("APNEA"))
+DeepSleep_Land    <- subset(ScoringData_Land,Stage %in% c("SWS"))
+REMSleep_Land     <- subset(ScoringData_Land,Stage %in% c("REM"))
+LightSleep_Land   <- subset(ScoringData_Land,Stage %in% c("INTERMED"))
+
+Apneas_interval_Land <- list()
+for (i in 1:nrow(Apneas_Land)){
+  Apneas_interval_Land[i]<-list(interval(Apneas_Land$R.Start.Time[i],Apneas_Land$R.End.Time[i]))
+}
+
+Apneas_Water      <- subset(ScoringData_Water,Stage %in% c("APNEA"))
+DeepSleep_Water   <- subset(ScoringData_Water,Stage %in% c("SWS"))
+REMSleep_Water    <- subset(ScoringData_Water,Stage %in% c("REM"))
+LightSleep_Water  <- subset(ScoringData_Water,Stage %in% c("INTERMED"))
+
+Apneas_interval_Water <- list()
+for (i in 1:nrow(Apneas_Water)){
+  Apneas_interval_Water[i]<-list(interval(Apneas_Water$R.Start.Time[i],Apneas_Water$R.End.Time[i]))
+}
+
+LS_Start_Land_Logicals   <- LightSleep_Land$R.Start.Time %within% Apneas_interval_Land
+LS_End_Land_Logicals     <- LightSleep_Land$R.End.Time %within% Apneas_interval_Land
+LS_percent_Start_Land    <- table(LS_Start_Land_Logicals)["TRUE"]/length(LS_Start_Land_Logicals)
+LS_percent_End_Land      <- table(LS_End_Land_Logicals)["TRUE"]/length(LS_End_Land_Logicals)
+print(paste(LS_percent_Start_Land*100, "% of LS episodes on land started during an apnea"))
+print(paste(LS_percent_End_Land*100, "% of LS episodes on land ended during an apnea"))
+
+REM_Start_Land_Logicals   <- REMSleep_Land$R.Start.Time %within% Apneas_interval_Land
+REM_End_Land_Logicals     <- REMSleep_Land$R.End.Time %within% Apneas_interval_Land
+REM_percent_Start_Land    <- table(REM_Start_Land_Logicals)["TRUE"]/length(REM_Start_Land_Logicals)
+REM_percent_End_Land      <- table(REM_End_Land_Logicals)["TRUE"]/length(REM_End_Land_Logicals)
+print(paste(REM_percent_Start_Land*100, "% of REM episodes on land started during an apnea"))
+print(paste(REM_percent_End_Land*100, "% of REM episodes on land ended during an apnea"))
+
+SWS_Start_Land_Logicals   <- DeepSleep_Land$R.Start.Time %within% Apneas_interval_Land
+SWS_End_Land_Logicals     <- DeepSleep_Land$R.End.Time %within% Apneas_interval_Land
+SWS_percent_Start_Land    <- table(SWS_Start_Land_Logicals)["TRUE"]/length(SWS_Start_Land_Logicals)
+SWS_percent_End_Land      <- table(SWS_End_Land_Logicals)["TRUE"]/length(SWS_End_Land_Logicals)
+print(paste(SWS_percent_Start_Land*100, "% of SWS episodes on land started during an apnea"))
+print(paste(SWS_percent_End_Land*100, "% of SWS episodes on land ended during an apnea"))
+
+LS_Start_Water_Logicals  <- LightSleep_Water$R.Start.Time %within% Apneas_interval_Water
+LS_End_Water_Logicals    <- LightSleep_Water$R.End.Time %within% Apneas_interval_Water
+LS_percent_Start_Water   <- table(LS_Start_Water_Logicals)["TRUE"]/length(LS_Start_Water_Logicals)
+LS_percent_End_Water     <- table(LS_End_Water_Logicals)["TRUE"]/length(LS_End_Water_Logicals)
+print(paste(LS_percent_Start_Water*100, "% of LS episodes in water started during an apnea"))
+print(paste(LS_percent_End_Water*100, "% of LS episodes in water ended during an apnea"))
+
+REM_Start_Water_Logicals  <- REMSleep_Water$R.Start.Time %within% Apneas_interval_Water
+REM_End_Water_Logicals    <- REMSleep_Water$R.End.Time %within% Apneas_interval_Water
+REM_percent_Start_Water   <- table(REM_Start_Water_Logicals)["TRUE"]/length(REM_Start_Water_Logicals)
+REM_percent_End_Water     <- table(REM_End_Water_Logicals)["TRUE"]/length(REM_End_Water_Logicals)
+print(paste(REM_percent_Start_Water*100, "% of REM episodes in water started during an apnea"))
+print(paste(REM_percent_End_Water*100, "% of REM episodes in water ended during an apnea"))
+
+SWS_Start_Water_Logicals  <- DeepSleep_Water$R.Start.Time %within% Apneas_interval_Water
+SWS_End_Water_Logicals    <- DeepSleep_Water$R.End.Time %within% Apneas_interval_Water
+SWS_percent_Start_Water   <- table(SWS_Start_Water_Logicals)["TRUE"]/length(SWS_Start_Water_Logicals)
+SWS_percent_End_Water     <- table(SWS_End_Water_Logicals)["TRUE"]/length(SWS_End_Water_Logicals)
+print(paste(SWS_percent_Start_Water*100, "% of SWS episodes in water started during an apnea"))
+print(paste(SWS_percent_End_Water*100, "% of SWS episodes in water ended during an apnea"))
+
+
+#Using intersect() function doesn't work because it checks line by line to see if they intersect
+```
+
+```{r}
+#Bartlett's Test for Homogeneity of Variances in k samples (#stages)
+
+bartlett.test(Mean.LEEG1.DP~Stage, 
+              data=ScoringData_Water_NoMotion_filtered) 
+#without log transformation, far from equal variance p-value < 2.2e-16
+
+bartlett.test(log10(Mean.LEEG1.DP)~Stage, 
+              data=ScoringData_Water_NoMotion_filtered) 
+#with log transformation, closer to equal variance, but still not there: p-value = 0.01796
+
+#Levene’s test is an alternative to Bartlett’s test when the data is not normally distributed.
+leveneTest(log10(Mean.LEEG1.DP)~Stage, 
+              data=ScoringData_Water_NoMotion_filtered) 
+#with log transformation, barely passes: Pr(>F)= 0.05569
+```
+
+```{r}
+#Testing for Normality with Shapiro.Test, generating histograms, and looking at p-values
+for(i in as.character(unique(ScoringData2_filtered$Stage))){
+  Stage.by.Stage <- subset(ScoringData2_filtered,Stage %in% c(i))
+  hist(Stage.by.Stage$Mean.HR, 
+     main=paste(i),
+     border="light blue", 
+     col="blue", 
+     las=1, 
+     breaks=10)
+  stats_output[[i]]<-shapiro.test(Stage.by.Stage$Mean.HR) #want p-value >0.05 - p-value too low
+  if(stats_output[[i]]$p.value > 0.05){
+    print(paste("Normally distributed, because p for ",i,"is ",stats_output[[i]]$p.value,"and >0.05")) 
+  } else {
+    print(paste("NOT normally distributed, because p for ",i,"is",stats_output[[i]]$p.value,"and <0.05"))  
+  }
+}
+```
+```{r}
+#Testing for Equal Variance with Shapiro.Test and looking at p-values
+for(i in as.character(unique(ScoringData2_filtered$Stage))){
+  Stage.by.Stage <- subset(ScoringData2_filtered,Stage %in% c(i))
+  hist(log10(Stage.by.Stage$Mean.LEEG1.DP), #looking at histograms for log transformed values for each stage 
+     main=paste(i),
+     border="light blue", 
+     col="blue", 
+     las=1, 
+     breaks=10)
+  stats_output[[i]]<-shapiro.test(log10(Stage.by.Stage$Mean.LEEG1.DP)) #want p-value >0.05 - p-value too low
+  if(stats_output[[i]]$p.value > 0.05){
+    print(paste("Normally distributed, because p for ",i,"is ",stats_output[[i]]$p.value,"and >0.05")) 
+  } else {
+    print(paste("NOT normally distributed, because p for ",i,"is",stats_output[[i]]$p.value,"and <0.05"))  
+  }
+}
+```
+
+```{r}
+#Misc stuff
+shapiro.test(log10(ScoringData_Land_NoMotion_filtered$Mean.LEEG1.DP)) #with log transform
+hist(log10(ScoringData_Land_NoMotion_filtered$Mean.LEEG1.DP),
+     main="log(Mean.LEEG1.DP)", 
+     xlab="log(Mean.LEEG1.DP)", 
+     border="light blue", 
+     col="blue", 
+     las=1, 
+     breaks=10)
+
+qqPlot(log10(ScoringData_Land_NoMotion_filtered$Mean.LEEG1.DP)) #with log transform - better- should log transform EEG data
+qqPlot(log10(ScoringData_Water_NoMotion_filtered$Mean.LEEG1.DP)) #with log transform - better- should log transform EEG data
+
+
+#Trying to transform Mean.HR data to normalize...
+shapiro.test(log10(abs(ScoringData2_filtered$Mean.HR - mean(ScoringData2_filtered$Mean.HR)))) #want p-value >0.05 - p-value too low
+hist(log10(abs(ScoringData2_filtered$Mean.HR - mean(ScoringData2_filtered$Mean.HR))), 
+     main="log(abs(Mean.HR-mean(Mean.HR))", 
+     xlab="log(abs(Mean.HR-mean(Mean.HR))", 
+     border="light blue", 
+     col="blue", 
+     las=1, 
+     breaks=5)
+```
+
+```{r}
+#Testing for normality
+library("car")
+qqPlot(ScoringData_Land_NoMotion_filtered$Mean.LEEG1.DP) #without log transform
+qqPlot(ScoringData_Water_NoMotion_filtered$Mean.LEEG1.DP) #without log transform
+
+qqPlot(log10(ScoringData_Land_NoMotion_filtered$Mean.LEEG1.DP)) #with log transform - better- should log transform EEG data
+qqPlot(log10(ScoringData_Water_NoMotion_filtered$Mean.LEEG1.DP)) #with log transform - better- should log transform EEG data
+
+qqPlot(ScoringData2_filtered$Mean.HR) #should NOT log transform HR data
+qqPlot(log10(ScoringData2_filtered$Mean.HR)) #log10 transform HR data
+qqPlot((ScoringData2_filtered$Mean.HR)^2) #log10 transform HR data
+```
+
+```{r}
+#Anova to test for significant differences across sleep stages with no motion artifacts (excluding Jolt & Mvmt) in water
+anova.water.DP.stage=aov(log10(Mean.LEEG1.DP)~Stage, data=ScoringData_Water_NoMotion_filtered)
+summary(anova.water.DP.stage)
+coef(anova.water.DP.stage)
+TukeyHSD(anova.water.DP.stage) 
+
+anova.land.DP.stage=aov(log10(Mean.LEEG1.DP)~Stage, data=ScoringData_Land_NoMotion_filtered)
+summary(anova.land.DP.stage)
+coef(anova.land.DP.stage)
+TukeyHSD(anova.land.DP.stage) 
+
+levels(ScoringData_Water_NoMotion_filtered$Stage) #gives order of 
+# [1] "" "APNEA" "CALM" "EUPNEA" "INTERMED" "JOLT" "MVMT" "REM" "START" "SWS" "WAKE"  
+#expecting that REM is lower than CALM & WAKE
+c1 <- c(0,  0,     .5,     0,         0,       0,   .5,     -1,     0,    0,    .5)
+
+#expecting that SWS is higher than everything else
+c2 <- c(0,  0,    -.25,    0,       -.25,      0,    0,   -.25,     0,    1,    -.25)
+
+#expecting that CALM is higher than WAKE (should give insignificant result)
+c3 <- c(0,  0,     1,      0,         0,       0,    0,      0,     0,    0,     -1)
+
+
+mat <- cbind(c1,c2,c3)
+contrasts(ScoringData_Water_NoMotion_filtered$Stage) <- mat
+model1 <- aov(log10(Mean.LEEG1.DP)~Stage, 
+              data=ScoringData_Water_NoMotion_filtered)
+summary.aov(model1, split=list(Stage=list("REM vs CALM & WAKE"=1, "SWS vs CALM, WALK, INT, & REM" = 2, "CALM vs WAKE"=3))) 
+#SWS v all stages - contrasts: expecting that SWS is higher than all the other stages
+
+```
+```{r} 
+#Anova to test for significant differences across sleep stages with no motion artifacts (excluding Jolt & Mvmt) on land
+#results are very different with LEEG1, check this.
+anova.land.DP.stage=aov(log10(Mean.LEEG1.DP~Stage), data=ScoringData_Land_NoMotion_filtered) #logtransform to increase homoschodasticity
+summary(anova.land.DP.stage)
+coef(anova.land.DP.stage)
+TukeyHSD(anova.land.DP.stage)
+```
+```{r}
+#Anova to test for significant differences across sleep stages with no motion artifacts (excluding Jolt & Mvmt) on land
+anova.land.HR.stage=aov(Mean.HR~Stage, data=ScoringData_Land_NoMotion)
+summary(anova.land.HR.stage)
+coef(anova.land.HR.stage)
+TukeyHSD(anova.land.HR.stage)
+```
+```{r}
+#Anova to test for significant differences across sleep stages with no motion artifacts (excluding Jolt & Mvmt) on land
+anova.water.HR.stage=aov(Mean.HR~Stage, data=ScoringData_Water_NoMotion)
+summary(anova.water.HR.stage)
+coef(anova.water.HR.stage)
+TukeyHSD(anova.water.HR.stage)
+```
+
+```{r}
+#Code to generate rectangle plots
+plot(0,0,col="white",xlim=c(min(ScoringData2$R.End.Time),max(ScoringData2$R.End.Time)),ylim=c(0, 2.25),xaxt='n', yaxt='n',ann=FALSE)
+
+for(i in 1:nrow(ScoringData2))
+  if(ScoringData2$Stage[i]=="APNEA"){
+    rect(ScoringData2$R.Start.Time[i],0,ScoringData2$R.End.Time[i],0.25,col="#5B9BD5",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="EUPNEA"){
+    rect(ScoringData2$R.Start.Time[i],0.25,ScoringData2$R.End.Time[i],0.5,col="#F2A36E",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="CALM"){
+    rect(ScoringData2$R.Start.Time[i],1.75,ScoringData2$R.End.Time[i],2,col="#ACD7CA",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="WAKE"){
+    rect(ScoringData2$R.Start.Time[i],1.75,ScoringData2$R.End.Time[i],2,col="#ACD7CA",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="INTERMED"){
+    rect(ScoringData2$R.Start.Time[i],1.5,ScoringData2$R.End.Time[i],1.75,col="#CFCDEB",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="SWS"){
+    rect(ScoringData2$R.Start.Time[i],1.25,ScoringData2$R.End.Time[i],1.5,col="#A3CEED",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="REM"){
+    rect(ScoringData2$R.Start.Time[i],1,ScoringData2$R.End.Time[i],1.25,col="#FFC000",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="JOLT"){
+    rect(ScoringData2$R.Start.Time[i],2,ScoringData2$R.End.Time[i],2.25,col="#FF7F7F",border=NA)
+    
+  }else if(ScoringData2$Stage[i]=="MVMT"){
+    rect(ScoringData2$R.Start.Time[i],2,ScoringData2$R.End.Time[i],2.25,col="#FF7F7F",border=NA)
+  }
+
+ScoringData2$Rounded_hours <- round(range(ScoringData2$R.End.Time),"hours")#not sure why this is not working
+axis.POSIXct(1, at = seq(ScoringData2$Rounded_hours[1], ScoringData2$Rounded_hours[2], by = "hour"), format = "%H")
+```
+## lala
+
+```{r}
+#Code for Plotting Mean HR across sleep stages
+
+colors<-c("APNEA"="#5B9BD5",
+          "EUPNEA"="#F2A36E",
+          "CALM"="#ACD7CA",
+          "WAKE"="#ACD7CA",
+          "INTERMED"="#CFCDEB",
+          "SWS"="#A3CEED",
+          "REM"="#FFC000",
+          "JOLT"="#FF7F7F",
+          "MVMT"="#FF7F7F",
+          "START"="#FFFFFF")
+
+ggplot(data=ScoringData2_WithoutBreaths,aes(x=Stage,y=Mean.HR,fill=Stage)) + 
+  geom_jitter(size = 3, alpha = 0.1, width = 0.15) +
+  geom_boxplot(alpha = 0.7) + 
+  scale_fill_manual(values=colors) +
+  facet_wrap(~Land.v.Water) +
+  theme_classic() +
+  labs(y= "Mean Heart Rate (bpm)") +
+  theme(legend.position = "none")
+
+```
+
+
+```{r}
+#Code for Plotting Mean Delta Power across sleep stages
+
+breath_colors<-c("APNEA"="#5B9BD5",
+          "EUPNEA"="#F2A36E")
+
+ggplot(data=ScoringData2_Breaths,aes(x=Stage,y=Mean.HR,fill=Stage)) + 
+  geom_jitter(size = 3, alpha = 0.1, width = 0.15) +
+  geom_boxplot(alpha = 0.8) + 
+  scale_fill_manual(values=breath_colors) +
+  facet_wrap(~Land.v.Water) +
+  theme_classic() +
+  labs(y= "Mean Heart Rate (bpm)") +
+  theme(legend.position = "none")
+
+```
+```{r}
+#Code for Plotting Mean Delta Power across sleep stages
+
+ggplot(data=ScoringData2_NoMotion_filtered,aes(x=Stage,y=Mean.LEEG1.DP,fill=Stage)) + 
+  geom_jitter(size = 3, alpha = 0.1, width = 0.15) +
+  geom_boxplot(alpha = 0.8) + 
+  scale_fill_manual(values=colors) +
+  facet_wrap(~Land.v.Water) +
+  labs(y= "Mean Delta Spectral Power (0.5-4Hz)") +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+```{r}
+#Code for Plotting Standard Deviation of Delta Power across sleep stages
+colors<-c("APNEA"="#5B9BD5",
+          "EUPNEA"="#F2A36E",
+          "CALM"="#ACD7CA",
+          "WAKE"="#ACD7CA",
+          "INTERMED"="#CFCDEB",
+          "SWS"="#A3CEED",
+          "REM"="#FFC000",
+          "JOLT"="#FF7F7F",
+          "MVMT"="#FF7F7F",
+          "START"="#FFFFFF")
+
+ggplot(data=ScoringData2_NoMotion_filtered,aes(x=Stage,y=SD.LEEG1.DP,fill=Stage)) + 
+  geom_jitter(size = 3, alpha = 0.1, width = 0.15) +
+  geom_boxplot(alpha = 0.8) + 
+  scale_fill_manual(values=colors) +
+  facet_wrap(~Land.v.Water) +
+  labs(y= "Mean Delta Spectral Power (0.5-4Hz)") +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+```{r}
+#Code for Plotting Mean of Intermediate power across sleep stages
+colors<-c("APNEA"="#5B9BD5",
+          "EUPNEA"="#F2A36E",
+          "CALM"="#ACD7CA",
+          "WAKE"="#ACD7CA",
+          "INTERMED"="#CFCDEB",
+          "SWS"="#A3CEED",
+          "REM"="#FFC000",
+          "JOLT"="#FF7F7F",
+          "MVMT"="#FF7F7F",
+          "START"="#FFFFFF")
+
+ggplot(data=ScoringData2_NoMotion_filtered,aes(x=Stage,y=Mean.LEEG3.LSP..4.7Hz.,fill=Stage)) + 
+  geom_jitter(size = 3, alpha = 0.1, width = 0.15) +
+  geom_boxplot(alpha = 0.8) + 
+  scale_fill_manual(values=colors) +
+  facet_wrap(~Land.v.Water) +
+  labs(y= "Mean Delta Spectral Power (0.5-4Hz)") +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+
+
+```{r}
+#Code for Plotting Mean of Intermediate power across sleep stages
+colors<-c("APNEA"="#5B9BD5",
+          "EUPNEA"="#F2A36E",
+          "CALM"="#ACD7CA",
+          "WAKE"="#ACD7CA",
+          "INTERMED"="#CFCDEB",
+          "SWS"="#A3CEED",
+          "REM"="#FFC000",
+          "JOLT"="#FF7F7F",
+          "MVMT"="#FF7F7F",
+          "START"="#FFFFFF")
+
+ggplot(data=ScoringData2_NoMotion_filtered,aes(x=Stage,y=SD.HR,fill=Stage)) + 
+  geom_jitter(size = 3, alpha = 0.1, width = 0.15) +
+  geom_boxplot(alpha = 0.8) + 
+  scale_fill_manual(values=colors) +
+  facet_wrap(~Land.v.Water) +
+  labs(y= "Mean Delta Spectral Power (0.5-4Hz)") +
+  theme_classic() +
+  theme(legend.position = "none")
+```

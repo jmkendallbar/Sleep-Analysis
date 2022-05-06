@@ -37,3 +37,18 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Folders to ignore
+Data
+Data Processing Pipeline
+Datasheets
+Figures
+Protocols
+Video Footage
+Scripts/XX_Old or Unfinished Scripts
+Scripts/CATS-Methods-Materials
+Scripts/ArcGIS Projects
+Scripts/11_Eseal-Data-Processing-TV4-alpha_2022
+Scripts/01_Neurologger Software 2021
+Scripts/00_Video Scoring Materials
+Scripts/05_ICA-Processing/ExampleAnalysis_test12_Wednesday
