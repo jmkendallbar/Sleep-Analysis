@@ -19,11 +19,9 @@ extensions:
     here](https://www.teuniz.net/edfbrowser/index.html))
 -   <img src="./media/image19.png" width="15" height="15" alt="LabChart" /> LabChart (ADInstruments download here)
 -   <img src="./media/image21.png" width="15" height="15" alt="MATLAB"/> MATLAB v2020b 
-    * <img src="./media/image21.png"
-    style="width:0.15094in;height:0.15094in" /> EEGLAB MATLAB toolbox
+    * <img src="./media/image21.png" width="15" height="15"  alt="MATLAB" /> EEGLAB MATLAB toolbox
     for EEG research ([download here](https://eeglab.org/download/))  
-    * <img src="./media/image21.png"
-    style="width:0.15094in;height:0.15094in" /> CATS MATLAB toolbox for
+    * <img src="./media/image21.png" width="15" height="15"  alt="MATLAB" /> CATS MATLAB toolbox for
     Biologging tools ([download
     here](https://github.com/wgough/CATS-Methods-Materials))
 -   <img src="./media/image23.jpeg" width="15" height="15" alt="ArcGIS logo" /> ArcGIS Pro (ESRI)
@@ -119,8 +117,6 @@ extensions:
 ## **STEP 10. Data Aggregation & Standardization**
 <img src="./media/image11.png" width="15" height="15" alt="Automation" /> Reading in and standardizing depth data across datasets. <img src="./media/image21.png" width="15" height="15" alt="MATLAB" />
 
-## **STEP 11. Restimates: estimating sleep across datasets**
-
 * **00.** Load Data
 * **01.** Process Data
     * **01.A.** Depth Correction
@@ -128,6 +124,10 @@ extensions:
     * **01.C.** Data Alignment
     * **Inputs:** MAT files, raw CSV dive data for Sleep, Kami/Stroke,
 or TDR-only recordings.
+
+## **STEP 11. Sleep Estimates: estimating sleep across datasets**
+
+
 
 ## **STEP 12. Summarize all data**
 <img src="./media/image11.png" width="15" height="15" alt="Automation" /> <img src="./media/image12.png" width="15" height="15" alt="Manual Icon" /> Summarizing Sleep Scoring & Restimates Model Output <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" />
@@ -146,51 +146,37 @@ or TDR-only recordings.
     programming languages)
 
     1.  Script:
-        <img src="./media/image11.png" style="width:0.18362in;height:0.18814in"
-        alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="Automation" />
         **00_Metadata.R**
-        <img src="./media/image14.png" style="width:0.14101in;height:0.14101in"
-        alt="RStudio logo" />**\***
+        <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" />**\***
 
     2.  Input:
-        **00_Sleep_Study_Metadata.csv**<img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-        alt="A picture containing text, case Description automatically generated" />
+        **00_Sleep_Study_Metadata.csv**<img src="./media/image74.png" width="15" height="15" alt="CSV" />
 
     3.  **Output:
-        testNN_Nickname_00_Metadata.csv**<img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-        alt="A picture containing text, case Description automatically generated" />
+        testNN_Nickname_00_Metadata.csv**<img src="./media/image74.png" width="15" height="15" alt="CSV"/>
         for each seal
 
     4.  **Output 2:
-        01_Sleep_Study_Metadata.csv**<img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-        alt="A picture containing text, case Description automatically generated" />
+        01_Sleep_Study_Metadata.csv**<img src="./media/image74.png" width="15" height="15" alt="CSV"/>
         **–** Long format metadata for use in other programs
 
     5.  Save **00_Sleep_Study_Metadata.xlsx**
-        <img src="./media/image75.png" style="width:0.14151in;height:0.13561in"
-        alt="Microsoft Excel logo" /> with necessary fields filled in
+        <img src="./media/image75.png" width="15" height="15" alt="Excel logo" /> with necessary fields filled in
         (see Tagging Protocol for more lab-specific information) as
         **00_Sleep_Study_Metadata.csv**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-        alt="A picture containing text, case Description automatically generated" />**.**
+        <img src="./media/image74.png" width="15" height="15" alt="CSV" />**.**
 
     6.  **Run** Script:
-        <img src="./media/image11.png" style="width:0.18362in;height:0.18814in"
-        alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="Automation" />
         **00_Metadata.R**
-        <img src="./media/image14.png" style="width:0.14101in;height:0.14101in"
-        alt="RStudio logo" />**\* Use RStudio to open** 🗀 Sleep_Analysis
-        \> Sleep_Analysis.Rproj (if you don’t have it; install R and
-        RStudio first)
+        <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" />**\* Use RStudio to open** 🗀 Sleep_Analysis\> Sleep_Analysis.Rproj (if you don’t have it; install R and RStudio first)
 
         1.  **Will save:
-            01_Sleep_Study_Metadata.csv**<img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-            alt="A picture containing text, case Description automatically generated" />
+            01_Sleep_Study_Metadata.csv**<img src="./media/image74.png" width="15" height="15" alt="CSV" />
             in Data folder for subsequent steps.
 
-### <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
-alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> <img src="./media/image12.png" style="width:0.20755in;height:0.13814in"
-alt="Glasses Icon | Line Iconset | IconsMind" /> Location Data Processing 
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual Icon" /> Location Data Processing 
 
 1.  **Overview:** Use [Wildlife Computers Data
     Portal](https://my.wildlifecomputers.com/data/) to process GPS data.
@@ -211,36 +197,27 @@ alt="Glasses Icon | Line Iconset | IconsMind" /> Location Data Processing
 <img src="./media/image76.png" style="width:6.5in;height:1.47708in"
 alt="Graphical user interface, application Description automatically generated" />
 
-### <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
-alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> <img src="./media/image12.png" style="width:0.20755in;height:0.13814in"
-alt="Glasses Icon | Line Iconset | IconsMind" /> Video Scoring <img src="./media/image15.png" style="width:0.17925in;height:0.16265in"
-alt="Logo, company name Description automatically generated" /><img src="./media/image14.png" style="width:0.14101in;height:0.14101in"
-alt="RStudio logo" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation" /> <img src="./media/image12.png" width="15" height="15" alt="Manual Icon" /> Video Scoring <img src="./media/image15.png" width="15" height="15" alt="BORIS" /><img src="./media/image14.png" width="15" height="15" alt="R Studio" />
 
 1.  **Overview:** Video data is scored and turned into an Ethogram to be
     paired with motion/environmental sensor data and sleep data.
 
     1.  **Scripts:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
-        alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="Automation"/>
         **00_Ethograms.R**
-        <img src="./media/image14.png" style="width:0.14151in;height:0.14151in"
-        alt="RStudio logo" />
+        <img src="./media/image14.png" width="15" height="15" alt="R studio" />
 
     2.  **Input:** Scored data output from
-        <img src="./media/image15.png" style="width:0.17925in;height:0.16265in"
-        alt="Logo, company name Description automatically generated" />
+        <img src="./media/image15.png" width="15" height="15" alt="BORIS" />
         **BORIS** Behavioral Scoring software:  
         filename:
         testNN_Nickname_CameraType_StartYearMonthDay_StartTime-EndYearMonthDay_EndTime.csv  
         example:
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-        alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15" alt="CSV"/>
         test20_SnoozySuzy_DryWebcam_20200421_105230-20200423_142530.csv
 
     3.  **Output:**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-        alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15" alt="CSV" />
         testNN_Nickname_00_VideoScoringData.csv
 
 2.  On a parallel timeline with sleep processing, video files are scored
@@ -268,13 +245,11 @@ alt="RStudio logo" />
             (12-Apr-2020 11:07:30)
 
     3.  Score video files using
-        <img src="./media/image15.png" style="width:0.17925in;height:0.16265in"
-        alt="Logo, company name Description automatically generated" />BORIS
+        <img src="./media/image15.png" width="15" height="15" alt="BORIS" />BORIS
         ([download here](https://boris.readthedocs.io/en/latest/)) using
         the Boris Project File (🗀 Sleep_Analysis \> 🗀 Scripts \>
         **00_BorisProject.boris**
-        <img src="./media/image15.png" style="width:0.17925in;height:0.16265in"
-        alt="Logo, company name Description automatically generated" />)
+        <img src="./media/image15.png" width="15" height="15" alt="BORIS" />)
         and according to the **00_Ethogram.xlsx** (this file also stores
         output for Machine Learning Model Runs with files like
         testNN_Nickname_03_VideoMotionData_25Hz.csv):  
@@ -282,14 +257,9 @@ alt="RStudio logo" />
         alt="Graphical user interface, website Description automatically generated" /><img src="./media/image78.png" style="width:5.46477in;height:4.18733in"
         alt="Table Description automatically generated" />
 
-### <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
-alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> <img src="./media/image12.png" style="width:0.20755in;height:0.13814in"
-alt="Glasses Icon | Line Iconset | IconsMind" /> Raw Data
+### <img src="./media/image11.png" width="15" height="15" alt="Automation" /> <img src="./media/image12.png" width="15" height="15" alt="Manual Icon" /> Raw Data
 
-### <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
-alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> <img src="./media/image12.png" style="width:0.20755in;height:0.13814in"
-alt="Glasses Icon | Line Iconset | IconsMind" /> Download and convert data <img src="./media/image16.png"
-style="width:0.1729in;height:0.17643in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Download and convert data <img src="./media/image16.png" width="15" height="15" alt="Neurologger"/>
 
 1.  Overview:
 
