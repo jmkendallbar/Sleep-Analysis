@@ -1,6 +1,6 @@
 clear all
 
-for k=1:406
+parfor k=1:406
     
     %% 00.A Load Data & Metadata
     close all
