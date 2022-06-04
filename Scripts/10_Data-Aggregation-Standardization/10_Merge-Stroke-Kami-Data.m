@@ -13,6 +13,7 @@ Kami_Files = dir('*_Kami_Depth+Temp+Kami.txt');
 SealsUsed = table(Stroke_Files);
 
 for i = 1:length(Stroke_Files)
+    i=12
     clearvars -except i Stroke_Files Kami_Files Stroke_Metadata SealsUsed
     
     % Find SealID and associated available files.
@@ -63,9 +64,74 @@ for i = 1:length(Stroke_Files)
         disp(SealID); disp('Stroke data found and imported.');
     end
     
+    %% Finescale Alignment
+    [StrokeRaw_aligned KamiRaw_aligned, D] = alignsignals(NewRaw.DEPTH_Stroke_data(50000:100000),NewRaw.DEPTH_Kami_data(50000:100000));
     
+    figure
+    plot(StrokeRaw_aligned); hold on; plot(KamiRaw_aligned)
+    set(gca, 'YDir','reverse');
+    title(strcat('Seal: ',SealID,' Testing "Align Signals" function: yields delay D=', int2str(D)));
+    % print('-painters','-dpng', strcat(TOPPID,'_',SEALID,'_10_01_Stroking-Dive_Finescale-Alignment.png'))
+    
+    NewRaw.prealigned_Stroke_Rate = NewRaw.COUNT;
+    NewRaw.prealigned_KAMI = NewRaw.KAMI_L;
+    NewRaw.prealigned_Depth = NewRaw.DEPTH_Stroke_data;
+    
+    if D < 0 % Stroke Data needs to be delayed by D
+        NewRaw.COUNT(:) = [nan(abs(D),1); NewRaw.prealigned_Stroke_Rate(1:height(NewRaw)-abs(D))];
+        NewRaw.Depth(:) = [nan(abs(D),1); NewRaw.prealigned_Depth(1:height(NewRaw)-abs(D))];
+        NewRaw.KAMI_L(:) = [nan(abs(D),1); NewRaw.prealigned_KAMI(1:height(NewRaw)-abs(D))];
+    elseif D > 0 % Stroke Data needs to be advanced by D
+        NewRaw.COUNT(:) = [NewRaw.prealigned_Stroke_Rate(1+abs(D):height(NewRaw)); nan(abs(D),1)];
+        NewRaw.Depth(:) = [NewRaw.prealigned_Depth(1+abs(D):height(NewRaw)); nan(abs(D),1)];
+        NewRaw.KAMI_L(:) = [NewRaw.prealigned_KAMI(1+abs(D):height(NewRaw)); nan(abs(D),1)];
+    else
+        NewRaw.COUNT(:) = [NewRaw.prealigned_Stroke_Rate(1+abs(D):height(NewRaw))];
+        NewRaw.Depth(:) = [NewRaw.prealigned_Depth(1+abs(D):height(NewRaw))];
+        NewRaw.KAMI_L(:) = [NewRaw.prealigned_KAMI(1+abs(D):height(NewRaw))];
+    end
+    
+        NewRaw.is_maybe_glide     = abs(NewRaw.Depth) > 15;
+        NewRaw.is_maybe_swim       = abs(NewRaw.Depth) <= 15;
+        Maybe_Glides                 = table(yt_setones(NewRaw.is_maybe_glide),'VariableNames',{'Indices'});
+        Maybe_Swims                   = table(yt_setones(NewRaw.is_maybe_swim),'VariableNames',{'Indices'});
+        Maybe_Glides.Duration_s      = (Maybe_Glides.Indices(:,2)-Maybe_Glides.Indices(:,1))*Stroke_SamplingInterval;
+        Maybe_Swims.Duration_s        = (Maybe_Swims.Indices(:,2)-Maybe_Swims.Indices(:,1))*Stroke_SamplingInterval;
+        Maybe_Glides = Maybe_Glides(find(Maybe_Glides.Duration_s~=0),:);
+        Maybe_Swims = Maybe_Swims(find(Maybe_Swims.Duration_s~=0),:);
+
+    % Concatenate all chunks to find first and last (whether recognized as
+        % a dive or a surface interval).
+        All_Chunks = vertcat(Maybe_Swims,Maybe_Glides);
+        All_Chunks = sortrows(All_Chunks,'Indices');
+
+        % Truncate by removing the last chunks of stuff
+        % Include 1000 samples before and after to avoid truncating dives
+        firstix = min(All_Chunks.Indices(:,2)) - 1000; 
+        if firstix < 0
+            firstix =1;
+        end
+        lastix  = max(All_Chunks.Indices(:,1)) + 1000;
+        if lastix > height(NewRaw)
+            lastix = height(NewRaw);
+        end
+
+        
+        All_Chunks = All_Chunks(2:height(All_Chunks)-1,:);
+
+        for i=1:height(All_Chunks)
+            if All_Chunks.Duration_s(i)>10000
+                NewRaw.COUNT(All_Chunks.Indices(i,1):All_Chunks.Indices(i,2)) = nan;
+            end
+        end
+
+        % Take off first and last chunk
+        NewRaw = NewRaw(firstix:lastix,:);
+
+    NewRaw2 = table(NewRaw.Depth, NewRaw.COUNT, NewRaw.KAMI_L, NewRaw.date,'VariableNames',{'Depth','COUNT','KAMI_L','date'});
+
     % Create start datenum column based on Stroke data.
-    writetable(NewRaw,strcat(SealID,'_stroke_raw_data.csv'))
+    writetable(NewRaw2,strcat(SealID,'_stroke_raw_data.csv'))
     SealsUsed.CSV_generated(i) = 1;
     disp(SealID); disp('CSV file processed successfully');
 end

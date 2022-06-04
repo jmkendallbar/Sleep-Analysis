@@ -1617,6 +1617,12 @@ alt="A screenshot of a computer Description automatically generated" />
 
     3.  **Outputs:** 3D animations (mp4s).
 
+    4. **Instructions:** Prepare 10Hz data for importing into Maya:
+            1. **GLIDE CONTROLLER:** Create new channel with arithmetric: `Smooth(Window(Ch18,0,15),15)` This applies a smoothing filter of 15 seconds and sets any value between a stroke rate of 0 and 15 strokes per minute to 1 (GLIDE) and any stroke rates above 15 strokes per minute to 0 (SWIM).
+            2. **SWIM CONTROLLER:** Cyclic measurement that uses GyrZ channel with Smoothing = 100 ms; Median filtering with a window of 3 pts; High-pass cutoff: 0.3Hz; Auto-leveling/normalization window of 3s and 0.1 rps; Minimum peak height: 0.15; minimum period 500 ms; peak search window: 30s
+            3. **EXPORT:** Generate .txt file :
+            <img src="./media/image139.png" alt="screenshot" />
+
 ### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Data Aggregation & Standardization <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" /> 
 
 ### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Generate standardized raw files

@@ -36,7 +36,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r Restimates_Output-to-Summary}
-Restimates_Filenames <- dir("Data/11_Restimates_Parallel")
+Restimates_Filenames <- dir(here("Data","11_Restimates_Parallel/"))
 
 Restimates_split <- do.call(rbind, strsplit(Restimates_Filenames, "_"))[, 1:2]
 Restimates_Files <- data.frame(cbind(Restimates_Filenames, Restimates_split))
@@ -47,17 +47,17 @@ TOPPIDs <- unique(Restimates_Files$TOPPID)
 
 Restimates_Files$Dive_files <- str_extract(Restimates_Files$Filename, ".*Daily_Activity.csv")
 
-Daily_Files <- dir("Data/11_Restimates_Parallel",pattern=".*Daily_Activity.csv")
-Dives_Files <- dir("Data/11_Restimates_Parallel",pattern=".*Dives.csv")
+Daily_Files <- dir(here("Data","11_Restimates_Parallel/"),pattern=".*Daily_Activity.csv")
+Dives_Files <- dir(here("Data","11_Restimates_Parallel/"),pattern=".*Dives.csv")
 
-Restimates_Metadata <- read_csv("Data/11_Sleep_Model_Summary.csv",na='NaN')
+Restimates_Metadata <- read_csv(here("Data","11_Sleep_Model_Summary.csv"),na='NaN')
 Restimates_Metadata <- Restimates_Metadata %>% drop_na(TOPPID)
 
 # Issue with 288 - have a track but no Dives.csv file
 for (i in 1:100) { 
-  Dives <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
-  Daily <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
-  SealsUsed <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Seals_Used.csv",sep=""))
+  Dives <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
+  Daily <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
+  SealsUsed <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Seals_Used.csv",sep=""),na='NaN')
   
   
   Daily <- Daily %>% drop_na(Days_Elapsed)
@@ -94,9 +94,9 @@ for (i in 1:100) {
 }
 
 for (i in 101: length(FileIDs)-4) { # All except sleep data and Images folder
-  Dives <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
-  Daily <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
-  SealsUsed <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Seals_Used.csv",sep=""))
+  Dives <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
+  Daily <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
+  SealsUsed <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Seals_Used.csv",sep=""))
   
   
   Daily <- Daily %>% drop_na(Days_Elapsed)
@@ -134,9 +134,9 @@ for (i in 101: length(FileIDs)-4) { # All except sleep data and Images folder
 
 # OMIT NANs before writing CSVs
 
-write.csv(Dives_ALL,"Data/11_Restimates_ALL_Dives.csv",row.names = FALSE)
-write.csv(Daily_ALL,"Data/11_Restimates_ALL_DailyActivity.csv",row.names = FALSE)
-write.csv(SealsUsed_ALL,"Data/11_Restimates_ALL_SealsUsed.csv",row.names = FALSE)
+write.csv(Dives_ALL,here("Data","11_Restimates_ALL_Dives.csv"),row.names = FALSE)
+write.csv(Daily_ALL,here("Data","11_Restimates_ALL_DailyActivity.csv"),row.names = FALSE)
+write.csv(SealsUsed_ALL,here("Data","11_Restimates_ALL_SealsUsed.csv"),row.names = FALSE)
 ```
 
 ```{r Restimates_Track_output}

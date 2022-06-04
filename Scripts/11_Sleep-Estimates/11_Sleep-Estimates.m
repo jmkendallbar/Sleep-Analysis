@@ -1,7 +1,8 @@
 clear all
 
-parfor k=1:406
-    
+parfor k=389:391 % 406 total
+%%
+%for k=391:391
     %% 00.A Load Data & Metadata
     close all
     
@@ -47,7 +48,8 @@ parfor k=1:406
     disp('01.A complete: Metadata loaded.')
 
     Seals_Used = readtable(strcat(Identifier,'_10_SealsUsed.csv'));
-    Seals_Used = Seals_Used(find(string(Seals_Used.TOPPID(1))==TOPPID),:);
+    TOPPIDs = table2array(Seals_Used(:,1));
+    Seals_Used = Seals_Used(TOPPIDs==str2num(TOPPID),:);
     NewRaw = readtable(strcat(Identifier,'_10_NewRaw.csv'));
     
     cd(Data_path);
@@ -173,28 +175,30 @@ parfor k=1:406
         disp('Reasonable number of long drifts detected') 
     else
         disp('Suspiciously low number of long drifts detected')
-        while height(Drifts_long_test) < reasonable_long_drift_num_threshold
-            post_round_depth_smooth_window = post_round_depth_smooth_window + 2 % Expand smoothing window by 2
-            NewRaw.CorrectedDepth = smoothdata(NewRaw.CorrectedDepth,'gaussian',post_round_depth_smooth_window);
-            
-            % Recalculate derivatives
-            NewRaw.FirstDeriv      = [-diff(NewRaw.CorrectedDepth)/SamplingInterval; 0];    % vertical speed/depth rate of change
-            NewRaw.FirstDeriv_next = [0; NewRaw.FirstDeriv(1:height(NewRaw)-1)];            % find next slope
-            NewRaw.SecondDeriv     = [diff(NewRaw.FirstDeriv)/SamplingInterval; 0];         % vertical acceleration/change in change in slope
-
-             % Re-find drifts: 
-            NewRaw.is_drift(:) = 0;
-            NewRaw.is_drift = (abs(NewRaw.CorrectedDepth)> dive_threshold &... % MUST NOT BE AT SURFACE
-                                    abs(NewRaw.FirstDeriv) <= first_deriv_drift_threshold & ... % Vertical speed must be shallower than the threshold
-                                    abs(NewRaw.SecondDeriv) <= second_deriv_drift_threshold & ... % Change in vertical speed must be within smaller threshold
-                                    (sign(NewRaw.FirstDeriv) == sign(NewRaw.FirstDeriv_next))); % or if changes, must be very small
-            Drifts              = table(yt_setones(NewRaw.is_drift),'VariableNames',{'Indices'});
-            Drifts.Duration_s   = (Drifts.Indices(:,2)-Drifts.Indices(:,1))*SamplingInterval;
-            Drifts              = Drifts(find(Drifts.Duration_s~=0),:);
-            Drifts_long_test    = Drifts(find(Drifts.Duration_s > long_drift_threshold_when_positive),:);
-        end
-        disp(strcat('Smoothing factor of =',int2str(post_round_depth_smooth_window), ' required to obtain reasonable number of long drifts.'))
-        Seals_Used.SmoothingFactorRequired(k) = post_round_depth_smooth_window;
+        continue
+%         
+%         while height(Drifts_long_test) < reasonable_long_drift_num_threshold
+%             post_round_depth_smooth_window = post_round_depth_smooth_window + 2 % Expand smoothing window by 2
+%             NewRaw.CorrectedDepth = smoothdata(NewRaw.CorrectedDepth,'gaussian',post_round_depth_smooth_window);
+%             
+%             % Recalculate derivatives
+%             NewRaw.FirstDeriv      = [-diff(NewRaw.CorrectedDepth)/SamplingInterval; 0];    % vertical speed/depth rate of change
+%             NewRaw.FirstDeriv_next = [0; NewRaw.FirstDeriv(1:height(NewRaw)-1)];            % find next slope
+%             NewRaw.SecondDeriv     = [diff(NewRaw.FirstDeriv)/SamplingInterval; 0];         % vertical acceleration/change in change in slope
+% 
+%              % Re-find drifts: 
+%             NewRaw.is_drift(:) = 0;
+%             NewRaw.is_drift = (abs(NewRaw.CorrectedDepth)> dive_threshold &... % MUST NOT BE AT SURFACE
+%                                     abs(NewRaw.FirstDeriv) <= first_deriv_drift_threshold & ... % Vertical speed must be shallower than the threshold
+%                                     abs(NewRaw.SecondDeriv) <= second_deriv_drift_threshold & ... % Change in vertical speed must be within smaller threshold
+%                                     (sign(NewRaw.FirstDeriv) == sign(NewRaw.FirstDeriv_next))); % or if changes, must be very small
+%             Drifts              = table(yt_setones(NewRaw.is_drift),'VariableNames',{'Indices'});
+%             Drifts.Duration_s   = (Drifts.Indices(:,2)-Drifts.Indices(:,1))*SamplingInterval;
+%             Drifts              = Drifts(find(Drifts.Duration_s~=0),:);
+%             Drifts_long_test    = Drifts(find(Drifts.Duration_s > long_drift_threshold_when_positive),:);
+%         end
+%         disp(strcat('Smoothing factor of =',int2str(post_round_depth_smooth_window), ' required to obtain reasonable number of long drifts.'))
+%         Seals_Used.SmoothingFactorRequired(k) = post_round_depth_smooth_window;
     end
 
     % Plot a random dive to inspect pre- and post-smooth - Ensure that dive features are not lost.
@@ -617,7 +621,7 @@ parfor k=1:406
     if positive_likely_day < 20 & positive_likely_day < max(NewRaw.Days_Elapsed)-5
         % IF LEFT WHILE POSITIVELY BUOYANT
         % If she was positively buoyant within 20 first days of trip,
-        % and the detected buoyancy change was within 5 days of arrival, 
+        % and the detected buoyancy change was not within 5 days of arrival, 
         % allow LONG negative drifts & positive drifts that fit
         % anti-transit criteria.
         
@@ -645,9 +649,11 @@ parfor k=1:406
         
         % AFTER POSTIIVE LIKELY DAY:
         Pos_Pos_Filtered_Drifts_long = Refined_Drifts_long(find(Refined_Drifts_long.DriftRate >= 0 ... % must be positive
+            & Refined_Drifts_long.Days_Elapsed > positive_likely_day ...
             & anti_transit_criteria),:); % must not be too curved
         
         Pos_Neg_Filtered_Drifts_long = Refined_Drifts_long(find(Refined_Drifts_long.DriftRate <= 0 ...
+            & Refined_Drifts_long.Days_Elapsed > positive_likely_day ...
             & shallow1 == 0 ... % deeper than 200 m
             & Refined_Drifts_long.Duration_s >= long_drift_threshold),:); % negative dives should be longer than threshold
         
@@ -665,7 +671,7 @@ parfor k=1:406
     
     shallow2 = Refined2_Drifts_long.Start_Depth < 500; % Shallow / above 500 m
     v_early = Refined2_Drifts_long.Days_Elapsed < 15; % within 15 days of beginning
-    v_late = Refined2_Drifts_long.Days_Elapsed < max(Refined2_Drifts_long.Days_Elapsed)- 15; % within 15 days of beginning
+    v_late = Refined2_Drifts_long.Days_Elapsed < max(Refined2_Drifts_long.Days_Elapsed)- 15; % within 15 days of arrival
     v_early_shallow_refined_drifts = Refined2_Drifts_long.DriftRate(find(v_early & shallow2),:);
     v_late_shallow_refined_drifts = Refined2_Drifts_long.DriftRate(find(v_late & shallow2),:);
     
@@ -703,6 +709,9 @@ parfor k=1:406
             v_late_Filtered_Drifts_long, ...
             not_early_or_late_Filtered_Drifts_long);
     end
+    
+    % Add back in the long flats
+    Filtered_Drifts_long = vertcat(Filtered_Drifts_long,Flats_long);
 
     Seals_Used.Drifts_long(k) = height(Drifts_long);
     Seals_Used.Drifts_long_meanDur_min(k) = mean(Drifts_long.Duration_s)/60;
@@ -738,7 +747,7 @@ parfor k=1:406
         NewRaw.long_flat_num(Flats_long.Indices(f,1):Flats_long.Indices(f,2)) = f;
     end
 
-    Filtered_Drifts_long = vertcat(Filtered_Drifts_long,Flats_long);
+    
     
     disp('Section 3.A Complete: Drifts filtered.')
 

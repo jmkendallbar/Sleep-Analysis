@@ -40,6 +40,8 @@ SealIDs = ["test12_Wednesday",... % Recording 1
 info = metadata(find(metadata.TestID == SealIDs(s)),:);
 info.Properties.RowNames = info.description;
 
+86400*(info.JulDate('ON.ANIMAL')-info.JulDate('Start.for.EDF.Files'))
+
 %% Read in Data
 
 load(strcat(SealIDs(s),'_08_PRH_file_5Hzprh.mat'));
@@ -90,9 +92,12 @@ Rates_Power = table(Rates.Seconds, Rates.Stroke_Rate, Rates.Heart_Rate, Rates.L_
 
 hypnotrack_1hz = innerjoin(hypnotrack,Rates_Power,'Keys','Seconds');
 
+hypnotrack_30s = downsample(hypnotrack_1hz,30);
+
 %% Save hypnotracks
 writetable(hypnotrack,strcat(SealIDs(s),'_09_Hypnotrack_JKB_',num2str(fs),'Hz.csv'));
 writetable(hypnotrack_1hz,strcat(SealIDs(s),'_09_Hypnotrack_JKB_1Hz.csv'));
+writetable(hypnotrack_30s,strcat(SealIDs(s),'_09_Hypnotrack_JKB_30s.csv'));
 disp('Hypnotrack generated successfully.')
 
 gscatter(hypnotrack_1hz.Long, hypnotrack_1hz.Lat, [],'filled',hypnotrack_1hz.Water_Num)
@@ -183,3 +188,33 @@ export_fig 3D_Drift_zoomed.pdf
 timeofsleep = find(hypnotrack.Sleep_Color==4 | hypnotrack.Sleep_Color==3 | hypnotrack.Sleep_Color==5 | hypnotrack.Sleep_Color==6);
 
 min(abs(hypnotrack.DN(:)-timeofsleep))
+%% Make animation file
+
+% Add 1 Hz Rates data
+anim_file              = strcat(SealIDs(s),'_06_ALL_PROCESSED_Trimmed_withAnimChannels.txt');
+opts                    = detectImportOptions(anim_file);
+opts.DataLines          = 10;
+opts.VariableNamesLine  = 5;
+% Read in data
+Anims                   = readtable(anim_file,opts);
+Anims.Seconds(:)        = round(linspace(0,height(Anims),height(Anims)));
+Anims.Stroke_Rate(find(isnan(Anims.Stroke_Rate))) = 0;
+Anims.Heart_Rate(find(isnan(Anims.Heart_Rate))) = 0;
+Anims_Power = table(Anims.Seconds, Anims.Stroke_Rate, Anims.Heart_Rate, Anims.L_EEG_Delta, Anims.R_EEG_Delta, Anims.HR_VLF_Power,...
+    'VariableNames',{'Seconds','Stroke_Rate','Heart_Rate','L_EEG_Delta','R_EEG_Delta','HR_VLF_Power'});
+
+
+
+hypnotrack_1Hz = readtable(strcat(SealIDs(s),'_09_Hypnotrack_JKB_1Hz.csv'));
+hypnotrack_5Hz = readtable(strcat(SealIDs(s),'_09_Hypnotrack_JKB_5Hz.csv'));
+
+load(strcat(SealIDs(s),'_08_PRH_file_5Hzprh.mat'));
+
+
+offset_before_ONANIMAL = 86400*(info.JulDate('ON.ANIMAL')-info.JulDate('Start.for.EDF.Files'))
+startsec = 60763 - offset_before_ONANIMAL
+endsec = 63847 - offset_before_ONANIMAL
+hypnotrack_excerpt = hypnotrack_1Hz(find(hypnotrack_1Hz.Seconds < endsec...
+    & hypnotrack_1Hz.Seconds >= startsec),:);
+
+plot(Gw(:,3))

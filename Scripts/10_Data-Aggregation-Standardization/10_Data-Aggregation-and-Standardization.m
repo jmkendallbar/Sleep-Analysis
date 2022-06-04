@@ -2,8 +2,8 @@
 
 %% 00.A - READ IN RAW DIVE DATA, MAT FILE, AND STROKE DATA
 clear all
-%parfor k=1:418
-for k=411:418
+%parfor k=191:224
+for k=191:196
     close all
     k
     % Data_path = 'C:\Users\fbar\Documents\Sleep_Analysis\Data'
@@ -40,6 +40,7 @@ for k=411:418
         haveSleepData = ~isempty(SealID);
         if ~isempty(SealID)
             haveSleepData = 1; haveDiveData = 0;
+            TOPPID = Raw_Files(k).name(1:7); 
             Identifier = extractBefore(Raw_Files(k).name,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')
             disp('Sleep Data File')
         elseif Raw_Files(k).name(end-18:end)
@@ -73,7 +74,7 @@ for k=411:418
         NewRaw.difftime = [diff(NewRaw.time)*86400; median(diff(NewRaw.time)*86400)];
         Orig_SamplingInterval = round(median(NewRaw.difftime));
 
-        if sum(Orig_SamplingInterval == [4 8])
+        if sum(Orig_SamplingInterval == [1 4 8])
             NewRaw = downsample(NewRaw,8/Orig_SamplingInterval); % Changing resolution to 1 per 8 sec
         elseif sum(Orig_SamplingInterval == [5 10])
             NewRaw = downsample(NewRaw,10/Orig_SamplingInterval); % Changing resolution to 1 per 10 sec
@@ -102,7 +103,8 @@ for k=411:418
             "test35_JauntingJuliette"];   % Recording 13
 
         Identifier = extractBefore(Raw_Files(k).name,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')
-        SEALID = extractBefore(Identifier,'_')
+        Nickname = extractAfter(Identifier,'_')
+        SEALID = extractBefore(Nickname,'_')
         s = find(SealIDs==SealID); % PICK A SEAL 
 
         % Setup data types for metadata
@@ -120,28 +122,35 @@ for k=411:418
         metadata.JulDate = datenum(metadata.Matlab_Time);
 
         % Load in seal-specific metadata
-        info = metadata(find(metadata.TestID == SealIDs(s)),:);
+        info = metadata(find(metadata.TestID == string(Nickname)),:);
         info.Properties.RowNames = info.description;
 
         TOPPID = char(info.value('TOPP.ID'))
 
+        cd('11_Restimates_Raw')
         % Load raw data 
-        NewRaw          = readtable(strcat(Identifier,'_09_Hypnotrack_JKB_1Hz.csv')); % load data
+        NewRaw          = readtable(strcat(Identifier,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')); % load data
         NewRaw.datetime = datetime(NewRaw.R_Time,'InputFormat','uuuu-MM-dd HH:mm:ss');
         NewRaw.Sec      = NewRaw.Seconds-NewRaw.Seconds(1);
         NewRaw.time_s   = NewRaw.Seconds;
         NewRaw.time     = NewRaw.DN;
         NewRaw.difftime = [diff(NewRaw.Seconds); median(diff(NewRaw.Seconds))];
-        SamplingInterval = median(NewRaw.difftime);
+        Orig_SamplingInterval = median(NewRaw.difftime);
 
         % Data standardization (8 or 10s SamplingInterval & 1m resolution)
-        NewRaw = downsample(NewRaw,8); % Changing resolution to 1 per 8sec
+        if sum(Orig_SamplingInterval == [1 4 8])
+            NewRaw = downsample(NewRaw,8/Orig_SamplingInterval); % Changing resolution to 1 per 8 sec
+        elseif sum(Orig_SamplingInterval == [5 10])
+            NewRaw = downsample(NewRaw,10/Orig_SamplingInterval); % Changing resolution to 1 per 10 sec
+        end
+
         fs = 1/median(diff(NewRaw.Seconds)); % Updating samples per sec to 1
         % NewRaw.CorrectedDepth = round(2*NewRaw.Depth)/2; % ROUND TO NEAREST 0.5 m 
         NewRaw.CorrectedDepth = round(NewRaw.Depth); % ROUND TO NEAREST meter 
         NewRaw.difftime = [diff(NewRaw.Seconds); median(diff(NewRaw.Seconds))];
         SamplingInterval = median(NewRaw.difftime);
         
+        cd(Data_path)
         cd('10_MAT processed files TV3 NESE') %go to mat file directory
         MATfile = dir([num2str(TOPPID) '*.mat']);
         haveMAT = ~isempty(MATfile);           
@@ -165,7 +174,7 @@ for k=411:418
         StrokeRaw = readtable(strcat(SealID,'_stroke_raw_data.csv'));
         StrokeRaw.CorrectedDepth = StrokeRaw.Depth;
         StrokeRaw = StrokeRaw(~isnan(StrokeRaw.CorrectedDepth),:);
-        StrokeRaw.time = StrokeRaw.date;
+        StrokeRaw.time = fixgaps(StrokeRaw.date); % interpolates across any NaNs
 
         StrokeRaw.difftime = [86400*diff(StrokeRaw.time); 86400*median(diff(StrokeRaw.time))];
         Orig_SamplingInterval = round(median(StrokeRaw.difftime));
@@ -223,6 +232,7 @@ if haveStrokeData | haveDiveData
             Seals_Used.Trip_End(k) = t.MetaData.ArriveDateTime;
             Seals_Used.Trip_Duration(k) = t.MetaData.ArriveDate-t.MetaData.DepartDate;   
             
+
             if t.MetaData.Group.CompleteTDR == 1 |  height(t.DiveType)>10
                 Seals_Used.Total_Transit(k) = sum(t.DiveType.DiveType(:)==0);
                 Seals_Used.Total_Forage(k) = sum(t.DiveType.DiveType(:)==1);
@@ -275,6 +285,7 @@ if haveStrokeData | haveDiveData
                         disp('Error: Diving data not aligned with MAT file or depth data is far from zero-offset.')
                         Seals_Used.Dive_data_aligned_with_MAT_file(k) = 0;
                         
+                        
                     end
                     % continue % WHEN IN FOR LOOP, go to next seal
                 else
@@ -282,6 +293,14 @@ if haveStrokeData | haveDiveData
                     Seals_Used.Dive_data_aligned_with_MAT_file(k) = 1;
                 end
                 NewRaw = NewRaw(find(NewRaw.time >= t.MetaData.DepartDate & NewRaw.time <t.MetaData.ArriveDate),:);
+                
+                [Year, Month, Day, Hour, Min, Sec] = datevec(t.MetaData.ArriveDateTime);
+
+                % FIX date time
+                datevec(NewRaw.time(1));
+                [Year1, Month1, Day1, Hour1, Min1, Sec1] = datevec(NewRaw.time);
+                Year1(:) = Year;
+                NewRaw.time = datenum([Year1, Month1, Day1, Hour1, Min1, Sec1]);
                 disp('Dive data cropped to trip duration')
             end
             %print('-painters','-dpng', strcat(TOPPID,'_',SEALID,'_10_00_Dive-Example.png'))
@@ -350,8 +369,8 @@ if haveStrokeData | haveDiveData
             Flat_Chunks0.Median_Depth(i) = median(NewRaw.CorrectedDepth(Flat_Chunks0.Indices(i,1):Flat_Chunks0.Indices(i,2)));
         end
 
-        % Select likely surface intervals by filtering out median depths more than 40 m
-        Flat_Chunks0               = Flat_Chunks0(find(abs(Flat_Chunks0.Median_Depth) < 40),:);
+        % Select likely surface intervals by filtering out median depths more than 25 m
+        Flat_Chunks0               = Flat_Chunks0(find(abs(Flat_Chunks0.Median_Depth) < 25),:);
 
         % Place depth during likely surface intervals into a new Depth Correction column
         NewRaw.is_long_flat_chunk(:) = 0;
@@ -566,7 +585,7 @@ if haveStrokeData | haveDiveData
         ndives_stroke = round((2/3)*height(Deep_Dives)); % was 40
         ndives_mk10 = round((2/3)*height(Deep_mk10_Dives)); % was 40
 
-        % Find second deepest dive within first 50 dives
+        % Find deepest dive within first 50 dives
         Amax = max(Deep_Dives.Max_depth(1:ndives_stroke));
         Bmax = max(Deep_mk10_Dives.Max_depth(1:ndives_mk10));
         Time_Amax = Deep_Dives.Time_max_depth(find(Deep_Dives.Max_depth(1:ndives_stroke) == Amax));
@@ -693,6 +712,19 @@ if haveStrokeData | haveDiveData
             Seals_Used.Stroke_Data_Present(k) = 1;
             Seals_Used.Stroke_Data_Merged(k) = 0;
         end
+    end
+
+    difftime = [diff(NewRaw.time)*86400; 0];
+    jumps = difftime(find(difftime - mean(difftime) >10));
+    longjumps = maxk(jumps,10);
+
+    if max(longjumps) < (8 * 3600) % if gap in data is less than 8 hrs
+        Newtimes = [NewRaw.time(1) : SamplingInterval/86400 : NewRaw.time(height(NewRaw))];
+        Newtimes = round(Newtimes * 86400)/86400;
+        NewRaw.time = round(NewRaw.time* 86400 ) / 86400;
+        NewRaw2 = table(Newtimes.','VariableNames',{'time'});
+        NewRaw = outerjoin(NewRaw,NewRaw2,'Keys','time','mergekeys',true);
+        NewRaw.CorrectedDepth(:) = fixgaps(NewRaw.CorrectedDepth);
     end
 
     haveStrokes = sum(strcmp('Stroke_Rate',NewRaw.Properties.VariableNames));
