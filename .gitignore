@@ -36,6 +36,9 @@ vignettes/*.pdf
 *.knit.md
 *.tmp
 
+# Temporary files created by Google Drive
+*.ini
+
 # R Environment Variables
 .Renviron
 

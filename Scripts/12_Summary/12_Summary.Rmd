@@ -453,9 +453,25 @@ max(Naps_SLEEP$End_Depth[Naps_SLEEP$Water_Code=="OPEN OCEAN"])
 longest_oceannap_min <- max(Naps_SLEEP$Duration_s[Naps_SLEEP$Water_Code!="LAND"])/60
 max_sleepdepth_m <- max(Naps_SLEEP$End_Depth[Naps_SLEEP$Water_Code!="LAND"])
 
+# Duration (in minutes) of the dive with the longest nap:
+longest_oceannap_divedur_min <- Dives_SLEEP$Duration_s[Dives_SLEEP$is_sleep==max(Dives_SLEEP$is_sleep)]/60
+# Duration of the longest dive (with or without sleep):
+longest_oceandive_min <- max(Dives_SLEEP$Duration_s)/60
+
+# Duration (in minutes) of the longest dive with sleep:
+longest_oceannapdive_min <- max(Dives_SLEEP$Duration_s[Dives_SLEEP$is_sleep!=0])/60
+# Duration (in minutes) of the shortest dive with sleep:
+shortest_oceannapdive_min <- min(Dives_SLEEP$Duration_s[Dives_SLEEP$is_sleep!=0])/60
+# Mean duration (in minutes) of dives with sleep:
+mean_oceannapdive_min <- mean(Dives_SLEEP$Duration_s[Dives_SLEEP$is_sleep!=0])/60
+# SD of dive duration (in minutes) of dives with sleep:
+sd_oceannapdive_min <- sd(Dives_SLEEP$Duration_s[Dives_SLEEP$is_sleep!=0])/60
+
+
+
 paste("Their breath-holding capacity liberates a niche where they can safely sleep at depth, during short (<", 
       longest_oceannap_min , 
-      "min) naps up to", max_sleepdepth_m, 
+      "min) naps during dives up to",longest_oceannapdive_min,"minutes long and up to", max_sleepdepth_m, 
       "m below the surface (N=", num_sleepdives,"sleeping dives)",
       "lasting", meandur_sleepdives_min, "±", sddur_sleepdives_min, "minutes.")
 

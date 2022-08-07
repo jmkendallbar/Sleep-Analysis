@@ -1,6 +1,6 @@
 %% 09 Hypnotracks - Pairing sleep data with motion
 % Processing Step 09.A: Read in Metadata
-s = 9; % PICK A SEAL ID Recording # (see list below)
+s = 11; % PICK A SEAL ID Recording # (see list below)
 
 % Set data directory; change as necessary.
 Data_path='G:\My Drive\Dissertation Sleep\Sleep_Analysis\Data';
@@ -257,6 +257,7 @@ NewRaw = readtable(strcat(SealIDs(s),'_09_Hypnotrack_JKB_1Hz.csv'));
 % Spiral: two (or more) consecutive spins past 180 in the same direction
 % Loop: a single loop of a spiral (between two same-direction spins past 180)
 
+
 NewRaw.is_sleep = NewRaw.Simple_Sleep_Num >=4; %IF SWS or REM assign 1
 NewRaw.is_REM   = NewRaw.Sleep_Num == 6 | NewRaw.Sleep_Num == 7; % if REM, assign 1
 
@@ -363,7 +364,7 @@ for d = 1:height(Spirals)
     %NewRaw.SpiralNum(startix:endix) = cumsum(NewRaw.RightSpin(startix:endix))-cumsum(NewRaw.LeftSpin(startix:endix));
 end
 
-scatter3(NewRaw.standardspiralxposition, NewRaw.standardspiralyposition, NewRaw.standardspiralzposition,...
+%scatter3(NewRaw.standardspiralxposition, NewRaw.standardspiralyposition, NewRaw.standardspiralzposition,...
     [],NewRaw.Simple_Sleep_Num,'filled')
 
 Loop_Criteria        = NewRaw.is_SleepSpiral & NewRaw.diffSleepSpinNum == 0; % Looking for curls in sleep spirals (between areas where a spin is detected (diffSleepSpinNum==1))
@@ -398,6 +399,7 @@ Naps_Only = NewRaw(find(~isnan(NewRaw.standardsleepxposition)),:);
 Spirals_Only = NewRaw(find(~isnan(NewRaw.standardspiralxposition)),:);
 
 
+histogram(N
 scatter3(NewRaw.standardloopxposition, NewRaw.standardloopyposition, NewRaw.standardloopzposition,...
     [],NewRaw.Simple_Sleep_Num,'filled')
 

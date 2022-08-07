@@ -6,8 +6,82 @@ library(tidyverse)
 library(ggeasy)
 library(scales)
 
+options(rgl.useNULL = TRUE)
+library(rgl)
+library("RColorBrewer")
+
+simple.sleep.col = c("Unscorable"="#D7D7D7", "Active Waking"= "#0c2c84","Quiet Waking" = "#225ea8",
+                     "Drowsiness"="#BBA9CF","REM" = "#FCBE46", "SWS" = "#41b6c4")
+
+hypnotrack_freq <-  1
+scorer <- 'JKB'
+spirals <- read.csv(here("Data",paste(SealID,"_09_Hypnotrack_",hypnotrack_freq,"Hz_All_Sleep_Spirals.csv",sep="")))
+
+get_colors <- function(groups, group.col = palette()){
+  groups <- as.factor(groups)
+  ngrps <- length(levels(groups))
+  if(ngrps > length(group.col)) 
+    group.col <- rep(group.col, ngrps)
+  color <- group.col[as.numeric(groups)]
+  names(color) <- as.vector(groups)
+  return(color)
+}
+
+
+library(rgl)
+rgl.clear( type = "shapes" )
+par3d(windowRect = c(20, 30, 1000, 1000))
+plotA <- spheres3d(x = spirals$standardsleepxposition, 
+                     y = spirals$standardsleepyposition, 
+                     z = spirals$standardsleepzposition, 
+                     color = get_colors(spirals$Simple_Sleep_Code, c("REM" = "#FCBE46", "SWS" = "#41b6c4")),
+                     radius = 1)
+rglwidget(elementId = "plot3drgl")
+
+rgl.bbox(color=c("#333377","black"), emission="#333377",
+         specular="#3333FF", shininess=5, alpha=0.2 )
+
+if (interactive() || in_pkgdown_example())
+  widget
+
+# \donttest{
+if (interactive() && !in_pkgdown_example()) {
+  # Save it to a file.  This requires pandoc
+  filename <- tempfile(fileext = ".html")
+  htmlwidgets::saveWidget(rglwidget(), filename)
+  browseURL(filename)
+}
+# }
+
+
+par3d(windowRect = c(20, 30, 1000, 1000))
+aspect3d(1.5,1,1)
+rgl.spheres(x = spirals$standardxposition, 
+          y = spirals$standardyposition, 
+          z = spirals$standardzposition, 
+          color = get_colors(spirals$Simple_Sleep_Code, c("REM" = "#FCBE46", "SWS" = "#41b6c4")),
+          radius = 1)
+rgl.bbox(color=c("#333377","black"), emission="#333377",
+         specular="#3333FF", shininess=5, alpha=0.2 )
+rgl.postscript("plot.pdf",fmt="pdf")
+rgl.snapshot(filename = "plot.png")
+
+spirals <- read.csv(here("Data",paste(SealID,"_09_Hypnotrack_",hypnotrack_freq,"Hz_All_Naps.csv",sep="")))
+
+rgl.init()
+par3d(windowRect = c(20, 30, 1000, 1000))
+aspect3d(1.5,1,1)
+cube3d(x = spirals$standardxposition, 
+       y = spirals$standardyposition, 
+       z = spirals$standardzposition, 
+       color = get_colors(spirals$Simple_Sleep_Code, c("REM" = "#FCBE46", "SWS" = "#41b6c4")),
+       radius = 1)
+rgl.bbox(color=c("#333377","black"), emission="#333377",
+         specular="#3333FF", shininess=5, alpha=0.2 )
+
 # READ IN HYPNOTRACK (exported from Matlab) ----
 hypnotrack_freq <-  5
+scorer <- 'JKB'
 hypnotrack <- read.csv(here("Data",paste(SealID,"_09_Hypnotrack_",scorer,"_",hypnotrack_freq,"Hz.csv",sep="")))
 names(hypnotrack) <- gsub(x = names(hypnotrack), pattern = "_", replacement = ".")  
 hypnotrack <- hypnotrack %>%

@@ -1,8 +1,8 @@
 clear all
 
-parfor k=389:391 % 406 total
+%for k=381:406 % 406 total
 %%
-%for k=391:391
+for k=390:390 %parfor k=406:406
     %% 00.A Load Data & Metadata
     close all
     
@@ -49,7 +49,7 @@ parfor k=389:391 % 406 total
 
     Seals_Used = readtable(strcat(Identifier,'_10_SealsUsed.csv'));
     TOPPIDs = table2array(Seals_Used(:,1));
-    Seals_Used = Seals_Used(TOPPIDs==str2num(TOPPID),:);
+    Seals_Used = Seals_Used(find(Seals_Used.TOPPID == str2num(TOPPID)),:);
     NewRaw = readtable(strcat(Identifier,'_10_NewRaw.csv'));
     
     cd(Data_path);
@@ -348,6 +348,7 @@ parfor k=389:391 % 406 total
         REMs                = REMs(find(REMs.Duration_s~=0 & REMs.Duration_s<LONG_threshold),:);
         REMs.Start_JulDate  = NewRaw.time(REMs.Indices(:,1));
         REMs.End_JulDate    = NewRaw.time(REMs.Indices(:,2));
+        
     end
 
     disp('')
@@ -708,6 +709,8 @@ parfor k=389:391 % 406 total
         Filtered_Drifts_long = vertcat(v_early_Filtered_Drifts_long, ...
             v_late_Filtered_Drifts_long, ...
             not_early_or_late_Filtered_Drifts_long);
+        
+        Flats_long = Flats_long(find(Flats_long.DriftRate < 0.02),:);
     end
     
     % Add back in the long flats

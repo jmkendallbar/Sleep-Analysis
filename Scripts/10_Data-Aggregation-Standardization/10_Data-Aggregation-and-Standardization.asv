@@ -3,7 +3,7 @@
 %% 00.A - READ IN RAW DIVE DATA, MAT FILE, AND STROKE DATA
 clear all
 %parfor k=1:418
-for k=404:418
+for k=415:418
     close all
     k
     % Data_path = 'C:\Users\fbar\Documents\Sleep_Analysis\Data'
@@ -51,7 +51,6 @@ for k=404:418
             disp('Dive Data File')
         end
     end
-    Seals_Used.TOPPID(k)=cellstr(TOPPID);
     
     %% 00.A - LOAD DIVE DATA
     if haveDiveData & haveStrokeData==0

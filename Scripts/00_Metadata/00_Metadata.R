@@ -47,7 +47,7 @@ for (i in 1:length(SealIDs)){
 
 
 # Read metadata for seal of choice ----
-SealID <- SealIDs[13]                        # HERE PICK the seal you want
+SealID <- SealIDs[11]                        # HERE PICK the seal you want
 info <- filter(metadata, TestID==SealID)    # filter metadata seal of choice  
 description <- unique(info$description)     # save description for column titles
 info <- data.frame(t(info$value))           # transpose to wide format
