@@ -14,8 +14,7 @@
 
     1.  **Script:** .adiset <img src="../media/image19.png"
         width="15" height="15" />  
-        (<img src="../media/image12.png" style="width:0.20755in;height:0.13814in"
-        alt="Glasses Icon | Line Iconset | IconsMind" /> None; manual)
+        (<img src="../media/image12.png" width="15" height="15" /> None; manual)
 
     2.  **Input:** testNN_Nickname_01_ALL_PROCESSED.adicht/
         testNN_Nickname_01_ALL_PROCESSED_Trimmed.adicht
