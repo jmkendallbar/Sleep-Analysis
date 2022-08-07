@@ -587,7 +587,7 @@ MATLAB v2020b: 🗀 Sleep_Analysis \> 🗀 Scripts \>
 The script 02_ProcessingMotionEnvSensors.m
 <img src="./media/image21.png" width="15" height="15" /> refers to sections in the
 CATS Toolbox’s MainPRHTool.m<img src="./media/image21.png"
-style="width:0.15094in;height:0.15094in" />
+width="15" height="15" />
 (<https://github.com/wgough/CATS-Methods-Materials>) which should be run
 simultaneously. We have made slight changes to the original code to work
 with our study system (available as MainPRHTool_JKB.m)
@@ -757,13 +757,13 @@ alt="Graphical user interface, text, application Description automatically gener
         whale CATS processing pipeline.  
         % In step 5, run cell 5, ctrl-c out of the process, then run:
 
-> tagon = false(size(data.Pressure));
+> `tagon = false(size(data.Pressure));`
 >
-> \[\~,a\] = min(abs(DNorig-info.JulDate('ON.ANIMAL')));
+> `\[\~,a\] = min(abs(DNorig-info.JulDate('ON.ANIMAL')));`
 >
-> \[\~,b\] = min(abs(DNorig-info.JulDate('OFF.ANIMAL')));
+> `\[\~,b\] = min(abs(DNorig-info.JulDate('OFF.ANIMAL')));`
 >
-> tagon(a:b) = true;
+> `tagon(a:b) = true;`
 
 6.  **Section 6:** Run pressure calibration & preliminary bench
     calibration to other sensors.
@@ -822,30 +822,27 @@ alt="A picture containing chart Description automatically generated" />
     of where you are so that you can go back and resume at Section 9
     later.
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Save Calibrated & Processed Data <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Save Calibrated & Processed Data <img src="./media/image21.png" width="15" height="15" />
 
 3.  **Overview:** Processing Step 02.F After running up to Section 8b in
     CATS toolbox, you can return to 02_ProcessingMotionEnvSensors.m to
     save your processed data.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
-        alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png"  width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         02_ProcessingMotionEnvSensors.m Section 02.F
 
     2.  **Input:** **Several MATLAB variables from previous step**
-        <img src="./media/image21.png"
-        style="width:0.15094in;height:0.15094in" />
+        <img src="./media/image21.png" width="15" height="15" />
 
     3.  **Outputs:**
 
         1.  **CSV:
-            testNN_Nickname_02_Calibrated_Processed_MotionEnvSensors_5Hz_StartDate-StartTime.csv**<img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+            testNN_Nickname_02_Calibrated_Processed_MotionEnvSensors_5Hz_StartDate-StartTime.csv**<img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
 
         2.  **MAT file:**
             **testNN_Nickname_02_Calibrated_Processed_MotionEnvSensors_5Hz_StartDate-StartTime.mat**
-            <img src="./media/image21.png"
-            style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         3.  **EDF file**
 
@@ -857,9 +854,9 @@ alt="A picture containing chart Description automatically generated" />
 
             2.  **With command line** (example provided in-line)
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Pairing Motion & Video Data <img src="./media/image13.png" style="width:0.17925in;height:0.17177in" alt="Microsoft Excel logo" /> <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Pairing Motion & Video Data <img src="./media/image13.png"  width="15" height="15" alt="Microsoft Excel logo" /> <img src="./media/image21.png"  width="15" height="15" />
 
-### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Video Data Synchronization <img src="./media/image13.png" style="width:0.17925in;height:0.17177in" alt="Microsoft Excel logo" />
+### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Video Data Synchronization <img src="./media/image13.png" width="15" height="15" alt="Microsoft Excel logo" />
 
 1.  **Overview:** Processing Step 03.A After having scored the video
     data, find synchronization points to adjust time points (ideally 2
@@ -867,16 +864,16 @@ alt="A picture containing chart Description automatically generated" />
     motion data.
 
     1.  **Script:**
-        <img src="./media/image12.png" style="width:0.20764in;height:0.14167in" alt="Glasses Icon | Line Iconset | IconsMind" /> None; manual.
+        <img src="./media/image12.png"  width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> None; manual.
 
     2.  **Input/Reference:**
-        <img src="./media/image105.png" style="width:0.15094in;height:0.13865in" alt="Video Record - Transparent Background Video Icon Png, Png Download , Transparent Png Image - PNGitem" />
+        <img src="./media/image105.png" width="15" height="15" alt="Video Record - Transparent Background Video Icon Png, Png Download , Transparent Png Image - PNGitem" />
         Video files
-        &<img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+        &<img src="./media/image74.png"  width="15" height="15" alt="CSV" />
         testNN_Nickname_00_VideoScoringData.csv
 
     3.  **Outputs: 00_Video_SyncPoints.xlsx & 00_Video_SyncPoints.csv**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />**  
+        <img src="./media/image74.png"  width="15" height="15" alt="CSV" />**  
         **See example spreadsheet below; after Restart 9 the animal
         entered the water 19 seconds later in the video than in the
         Logger Data.
@@ -894,10 +891,9 @@ alt="Table Description automatically generated" />
 
 5.  Save this simplified sheet as a .CSV to be used in R:
     **00_Video_SyncPoints.csv**
-    <img src="./media/image74.png" style="width:0.14944in;height:0.13805in"
-    alt="A picture containing text, case Description automatically generated" />
+    <img src="./media/image74.png"  width="15" height="15" alt="CSV" />
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Pairing Video Data to Motion Data (& Sleep Data) <img src="./media/image14.png" style="width:0.14101in;height:0.14101in" alt="RStudio logo" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Pairing Video Data to Motion Data (& Sleep Data) <img src="./media/image14.png"  width="15" height="15" alt="RStudio logo" />
 
 2.  **Overview:** Processing Step 03.A After having scored the video
     data, find synchronization points to adjust time points (ideally 2
@@ -905,18 +901,17 @@ alt="Table Description automatically generated" />
     motion data.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png"  width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         03_Video_and_Motion.R
-        <img src="./media/image14.png" style="width:0.14101in;height:0.14101in"
-        alt="RStudio logo" />
+        <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" />
 
     2.  **Inputs:**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15"alt="A picture containing text, case Description automatically generated" />
         **00_Video_SyncPoints.csv** &
         **testNN_Nickname_00_VideoScoringData.csv**
 
     3.  **Output:**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15"alt="A picture containing text, case Description automatically generated" />
         **testNN_Nickname_03_VideoMotionData_1Hz.csv &
         testNN_Nickname_03_VideoMotionData_25Hz.csv (to match Motion/Env
         Sensor frequency)**
@@ -926,7 +921,7 @@ alt="Table Description automatically generated" />
     1.  **Loads seal metadata & critical timestamps**
 
     2.  **Loads**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
         **00_Video_SyncPoints.csv** &
         **testNN_Nickname_00_VideoScoringData.csv**
 
@@ -940,16 +935,16 @@ alt="Table Description automatically generated" />
     5.  **Group by 1s & 30s time-bins** to match with lower resolution
         or Sleep Scoring Data.
 
-### <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Behavioral Scoring Automation <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Behavioral Scoring Automation <img src="./media/image21.png" width="15" height="15" />
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Main Process <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Main Process <img src="./media/image21.png" width="15" height="15" />
 
 1.  **Overview:** Processing Step 04.A: After pairing video and motion
     data, this labeled dataset can be used to train and test a machine
     learning algorithm.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
+        <img src="./media/image11.png" width="15" height="15"
         alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         main_process.m (original written by Ding Zhang from University
         of Michigan)
@@ -965,15 +960,15 @@ alt="Table Description automatically generated" />
         <img src="./media/image108.png" style="width:3.55071in;height:3.20064in"
         alt="Table Description automatically generated" />
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual"/> ICA Processing for Electrophysiological Data <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual"/> ICA Processing for Electrophysiological Data <img src="./media/image21.png" width="15" height="15" />
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Load data into EEGLAB <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Load data into EEGLAB <img src="./media/image21.png" width="15" height="15" />
 
 1.  **Overview:** Processing Step 05.A: Opens EDF file Rearranged_ALL
     and only imports 9 electrophysiological channels
 
 2.  1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in"
+        <img src="./media/image11.png" width="15" height="15"
         alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         ICA_Automation.m
 
@@ -983,7 +978,7 @@ alt="Table Description automatically generated" />
 
     3.  **Outputs:** EEG variable through EEGLAB
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Subset data <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Subset data <img src="./media/image21.png" width="15" height="15" />
 
 3.  **Overview:** Processing Step 05.B: subset your full EDF file into a
     short \~10 minute segment where (i) the animal is calm, (ii) the
@@ -993,7 +988,7 @@ alt="Table Description automatically generated" />
     activity).
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         ICA_Automation.m
 
     2.  **Input:** Dataset 1 : whole EDF file
@@ -1001,20 +996,20 @@ alt="Table Description automatically generated" />
     3.  **Outputs:** Dataset 2 : subset EEG data for a segment of time
         underwater
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Run ICA <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Run ICA <img src="./media/image21.png" width="15" height="15" />
 
 4.  **Overview:** Processing Step 05.C: Run ICA on the subset of your
     data. Use the runica function in EEGLAB.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         ICA_Automation.m
 
     2.  **Input:** Dataset 2 (subset for underwater)
 
     3.  **Outputs:** something.
 
-### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Inspect & document results <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Inspect & document results <img src="./media/image21.png" width="15" height="15" />
 
 5.  **Overview:** Processing Step 05.D: Examine ICA outputs, save images
     and topomaps.
@@ -1023,7 +1018,7 @@ alt="Table Description automatically generated" />
     Data \> **00_EEG_Channel_Locations_Topomap.ced  
     **<img src="./media/image109.png" style="width:4.80208in;height:2.6167in" alt="Graphical user interface, application, Word Description automatically generated" />
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Apply ICA weights to dataset <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Apply ICA weights to dataset <img src="./media/image21.png" width="15" height="15" />
 
 7.  **Overview:** Processing Step 05.E: Apply ICA weights to the rest of
     the dataset.
@@ -1031,7 +1026,7 @@ alt="Table Description automatically generated" />
 8.  <img src="./media/image110.png" style="width:5.32292in;height:2.79567in"
     alt="Graphical user interface, text, application Description automatically generated" />
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> <img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Concatenate desired signals & Export EDF <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> <img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Concatenate desired signals & Export EDF <img src="./media/image21.png" width="15" height="15" />
 
 9.  Step 1: Open excerpt with ICA weights
 
@@ -1123,14 +1118,14 @@ alt="Table Description automatically generated" />
 <img src="./media/image111.png" style="width:6.5in;height:3.48958in"
 alt="Table Description automatically generated" />
 
-### <img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Qualitative Sleep Scoring <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Qualitative Sleep Scoring <img src="./media/image19.png" width="15" height="15" />
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Load processed megadata <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Load processed megadata <img src="./media/image19.png" width="15" height="15" />
 
 1.  Overview: Processing Step 06.A: does this.
 
     1.  **Script:** .adiset <img src="./media/image19.png"
-        style="width:0.19662in;height:0.18905in" />  
+        width="15" height="15" />  
         (<img src="./media/image12.png" style="width:0.20755in;height:0.13814in"
         alt="Glasses Icon | Line Iconset | IconsMind" /> None; manual)
 
@@ -1156,7 +1151,7 @@ alt="Table Description automatically generated" />
                 scorer.csv** for use in: **06_Hypnograms.R** in
                 Processing Step 06.
 
-### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Identify scorable segments <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Identify scorable segments <img src="./media/image19.png" width="15" height="15" />
 
 1.  **Identify unscorable segments** in the data that are contaminated
     with artifacts:
@@ -1180,7 +1175,7 @@ alt="Table Description automatically generated" />
         peak detection due to artifact to see when a period of eupnea or
         apnea begins.
 
-### <img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Score Heart Rate (HR) Patterns <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Score Heart Rate (HR) Patterns <img src="./media/image19.png" width="15" height="15" />
 
 1.  **Score Heart Rate (HR) Patterns**: Be sure to maintain the order in
     which the following four comments are placed in an apnea-eupnea
@@ -1208,7 +1203,7 @@ alt="Table Description automatically generated" />
 <img src="./media/image112.png" style="width:6.5in;height:2.79167in"
 alt="A screenshot of a computer Description automatically generated" />
 
-### <img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Score Sleep Patterns <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Score Sleep Patterns <img src="./media/image19.png" width="15" height="15" />
 
 1.  **Score Sleep Patterns** by placing comments at points of transition
     from one sleep state to another. Here pick an epoch size based on
@@ -1317,38 +1312,38 @@ style="width:6.60864in;height:3.80208in" />
 | **Alt+J**                                                                        | ***JOLT (from sleep)***        | All           | Place comment at a transition **from sleep (light sleep, slow wave sleep, or REM sleep) to motion artifacts (active waking).** If the arousal does not cause a change in sleep state, the animal may go directly back into the previous state.                                                               |
 | **Alt+M**                                                                        | ***MVMT (from calm)***         | All           | Place comment at a transition **from calm or waking to movement** with the presence of motion artifacts.                                                                                                                                                                                                     |
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Generate Hypnograms & Quantitative Sleep Scoring <img src="./media/image14.png" style="width:0.14101in;height:0.14101in" alt="RStudio logo" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Generate Hypnograms & Quantitative Sleep Scoring <img src="./media/image14.png"  width="15" height="15" alt="RStudio logo" />
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Load processed megadata <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Load processed megadata <img src="./media/image19.png" width="15" height="15" />
 
 1.  **Overview:** Processing Step 06.A: does this.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         07_Hypnograms.R
-        <img src="./media/image14.png" style="width:0.14101in;height:0.14101in" alt="RStudio logo" />
+        <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" />
 
     2.  **Input:** something.
 
     3.  **Outputs:** something.
 
-### ![](./media/image20.png)<img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Track Generation <img src="./media/image14.png" style="width:0.14101in;height:0.14101in" alt="RStudio logo" /> <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" /> <img src="./media/image23.jpeg" style="width:0.16038in;height:0.16038in" alt="ArcGIS logo" />
+### ![](./media/image20.png)<img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Track Generation <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" /> <img src="./media/image21.png" width="15" height="15" /> <img src="./media/image23.jpeg" width="15" height="15"alt="ArcGIS logo" />
 
-### <img src="./media/image11.png" style="width:0.14306in;height:0.12986in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Export Rates & Power from LabChart <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Export Rates & Power from LabChart <img src="./media/image19.png" width="15" height="15" />
 
 1.  **Overview:** Export 1Hz data on Heart Rate, Stroke Rate, and Delta
     EEG Power (L & R) data exported from LabChart.
 
     1.  **Script:**
-        <img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> None; manual.
+        <img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> None; manual.
 
     2.  **Input:** **testNN_Nickname_05_ALL_PROCESSED_Trimmed.**adicht
 
     3.  **Output:
         testNN_Nickname_06_ALL_PROCESSED_Trimmed_withRATES_POWER.txt**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />**  
+        <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />**  
         **Exported LabChart Text File (downsampled 500X from original)
-        <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+        <img src="./media/image21.png" width="15" height="15" />
 
 2.  **Verify ‘Heart_Rate’ & ‘Stroke_Rate’ channels are properly named
     (after ‘Pressure’)**
@@ -1377,9 +1372,9 @@ alt="A screenshot of a computer Description automatically generated" />
 
 6.  **Export as LabChart text file with these settings (will save first
     column as Time of day in seconds):  
-    **<img src="./media/image118.png" style="width:2.84029in;height:2.35383in" alt="Graphical user interface, application, Word Description automatically generated" /><img src="./media/image119.png" style="width:2.85202in;height:2.34551in" alt="Graphical user interface, text, application Description automatically generated" />
+    **<img src="./media/image118.png" style="width:2.84029in;height:2.35383in" alt="Graphical user interface, application, Word Description automatically generated" /><img src="./media/image119.png" width="15" height="15"/>
 
-### <img src="./media/image11.png" style="width:0.14306in;height:0.12986in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Export LabChart Calculations <img src="./media/image19.png" style="width:0.19662in;height:0.18905in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Export LabChart Calculations <img src="./media/image19.png" width="15" height="15" />
 
 7.  Open data pad 
 
@@ -1389,7 +1384,7 @@ alt="A screenshot of a computer Description automatically generated" />
 
 10.  Make the following changes/additions in Columns X, Y, Z
 
-> <img src="./media/image120.png" style="width:1.75394in;height:2.01299in" alt="Graphical user interface, application, table, Excel Description automatically generated" /><img src="./media/image121.png" style="width:1.77897in;height:2.03879in" alt="Graphical user interface, application, table, Excel Description automatically generated" /><img src="./media/image122.png" style="width:1.77922in;height:2.03514in" alt="Graphical user interface, application, table, Excel Description automatically generated" />
+> <img src="./media/image120.png" width="15" height="15" /><img src="./media/image121.png" width="15" height="15" alt="Graphical user interface, application, table, Excel Description automatically generated" /><img src="./media/image122.png" width="15" height="15" />
 
 1.  Change the Time Mode (by right-clicking in the timeline on the
     bottom of the Chart View in LabChart) to **“Show as time of day”**
@@ -1411,63 +1406,63 @@ alt="A screenshot of a computer Description automatically generated" />
 
 14. Save your data as:
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Estimate speed from processed data <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Estimate speed from processed data <img src="./media/image21.png" width="15" height="15" />
 
 1.  **Overview:** Use Processing Step 08.B in **08_Speed-Estimation.m**
-    <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" /> to estimate speed
+    <img src="./media/image21.png" width="15" height="15" /> to estimate speed
     manually using 1Hz Stroke Rate data exported from LabChart and
     pitch, roll, heading.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
-        **08_Speed_Estimation.m** <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        **08_Speed_Estimation.m** <img src="./media/image21.png" width="15" height="15" />
 
     2.  **Input:**
         **testNN_Nickname_06_ALL_PROCESSED_Trimmed_withRATES_POWER.txt**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />**  
+        <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />**  
         **Exported LabChart Text File (downsampled 500X from original)
-        <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+        <img src="./media/image21.png" width="15" height="15" />
 
     3.  **Outputs:** Speed vector to be used in CATS Processing
 
 2.  Instructions:
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Return to CATS Processing for 3D <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Return to CATS Processing for 3D <img src="./media/image21.png" width="15" height="15" />
 
 1.  **Overview:** Processing Step 02.H Return to Section 9 in CATS
     toolbox (should be able to re-import ‘…truncate.mat’ file and it
     will recognize your progress based on the ‘…Info.mat’ file.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         **MainCATSprhTool_JKB.m**
 
     2.  **Input:** Previous PRH .mat file, additional manual speed
         variable, and GPS hits spreadsheet
-        <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+        <img src="./media/image21.png" width="15" height="15" />
 
     3.  **Outputs:** Pseudotrack & Geo-referenced pseudotrack based on
         speed
-        estimates<img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" />
+        estimates<img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" />
 
-### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Review track generation <img src="./media/image23.jpeg" style="width:0.16038in;height:0.16038in" alt="ArcGIS logo" /><img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image12.png" width="15" height="15" alt="Manual"/> Review track generation <img src="./media/image23.jpeg" width="15" height="15"alt="ArcGIS logo" /><img src="./media/image21.png" width="15" height="15" />
 
 2.  **Overview:** Manual inspection of the generated tracks in ArcGIS
     and/or Matlab. Remove and/or adjust inaccurate GPS points (making
     notes of any manipulation/justification in the “Notes” column).
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         **MainCATSprhTool_JKB.m** <img src="./media/image21.png"  width="15" height="15" /> **& Review in Google
         Maps or ArcGIS**
 
     2.  **Input:** testNN_Nickname_GPShits.xlsx
-        <img src="./media/image13.png" style="width:0.14946in;height:0.14323in" alt="Microsoft Excel logo" /> &
+        <img src="./media/image13.png" width="15" height="15" alt="Microsoft Excel logo" /> &
         testNN_Nickname_08_5HzgeoPtrackLatLong.csv
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
 
     3.  **Outputs:** testNN_Nickname_GPShits**\_UserModified**.xlsx
-        <img src="./media/image13.png" style="width:0.14946in;height:0.14323in" alt="Microsoft Excel logo" />
+        <img src="./media/image13.png" width="15" height="15" alt="Microsoft Excel logo" />
 
 3.  **Instructions:**
 
@@ -1489,36 +1484,36 @@ alt="A screenshot of a computer Description automatically generated" />
         accurate GPS point based on animal observations or landmasses
         (nearest coastal interface for inland points).
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Rerun with corrected GPS points <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Rerun with corrected GPS points <img src="./media/image21.png" width="15" height="15" />
 
 4.  **Overview:** Re-run section 13b and import corrected GPS points to
     re-generate track.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
-        **MainCATSprhTool_JKB.m**<img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        **MainCATSprhTool_JKB.m**<img src="./media/image21.png" width="15" height="15" />
 
     2.  **Input:** Previous PRH .mat file, additional manual speed
         variable, and corrected GPS hits spreadsheet:
         testNN_Nickname_GPShits**\_UserModified**.xlsx
-        <img src="./media/image13.png" style="width:0.14946in;height:0.14323in" alt="Microsoft Excel logo" />
+        <img src="./media/image13.png" width="15" height="15" alt="Microsoft Excel logo" />
 
     3.  **Outputs:
         testNN_Nickname_08_5HzgeoPtrackLatLong_manualspeed_manualGPScorrection.csv**
-        <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+        <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
 
 > Pseudotrack & Geo-referenced pseudotrack based on speed estimates
 
-### <img src="./media/image11.png" style="width:0.1in;height:0.1in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Hypnotrack Visualizations <img src="./media/image14.png" style="width:0.14101in;height:0.14101in" alt="RStudio logo" /> <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" /> <img src="./media/image23.jpeg" style="width:0.16038in;height:0.16038in" alt="ArcGIS logo" />
+### <img src="./media/image11.png" style="width:0.1in;height:0.1in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Hypnotrack Visualizations <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" /> <img src="./media/image21.png" width="15" height="15" /> <img src="./media/image23.jpeg" width="15" height="15"alt="ArcGIS logo" />
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Generate Hypnotrack <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Generate Hypnotrack <img src="./media/image21.png" width="15" height="15" />
 
 1.  **Overview:** Processing Step 09.A; After generating a pseudotrack
     and geo-referenced pseudotrack, you are ready to link sleep and
     motion data to a 3D track to visualize and interpret.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         **09_Hypnotracks.m**
 
     2.  **Inputs:**
@@ -1530,7 +1525,7 @@ alt="A screenshot of a computer Description automatically generated" />
         3.  LatLongs:
 
         4.  Ptrack & geoPtrack variables from CATS Processing
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
     3.  **Outputs:** CSV with Ptrack & geoPtrack variables to be matched
         with hypnogram data later on.
@@ -1550,7 +1545,7 @@ alt="A screenshot of a computer Description automatically generated" />
             1.  Make copy of prh mat file and rename:
                 “testNN_Nickname_08_PRH_file_5Hzprh.mat”
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Sleep Maps in ArcGIS <img src="./media/image23.jpeg" style="width:0.16038in;height:0.16038in" alt="ArcGIS logo" />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Sleep Maps in ArcGIS <img src="./media/image23.jpeg" width="15" height="15"alt="ArcGIS logo" />
 
 1.  **Overview:** Import CSV; transform XY table to Point (with Z field
     = Depth); style based on categorical sleep variable; enable time and
@@ -1562,7 +1557,7 @@ alt="A screenshot of a computer Description automatically generated" />
 
     3.  **Outputs:** 3D maps (pngs).
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Sleep Animations in Maya <img src="./media/image24.jpeg" style="width:0.17925in;height:0.17925in" alt="yt3.ggpht.com/ytc/AKedOLRdV5MlSLrSmsfaXoLAREOkH..." />
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Sleep Animations in Maya <img src="./media/image24.jpeg" width="15" height="15"alt="yt3.ggpht.com/ytc/AKedOLRdV5MlSLrSmsfaXoLAREOkH..." />
 
 2.  **Overview:** Follow [Visualizing Life in the Deep
     animation/visualization
@@ -1582,33 +1577,33 @@ alt="A screenshot of a computer Description automatically generated" />
             3. **EXPORT:** Generate .txt file :
             <img src="./media/image139.png" alt="screenshot" />
 
-### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Data Aggregation & Standardization <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" /> 
+### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Data Aggregation & Standardization <img src="./media/image21.png" width="15" height="15" /> 
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Generate standardized raw files
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Generate standardized raw files
 
 1.  **Overview:** Create standardized raw data files for kami kami and
     stroke raw data to be used in Costa lab elephant seal dive analysis
     pipeline.
 
     1.  **Script:**
-        <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+        <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
         ***10_Merge-Stroke-Kami-Data.m***
-        <img src="./media/image14.png" style="width:0.14101in;height:0.14101in" alt="RStudio logo" />
+        <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" />
 
     2.  **Input:** raw Kami & Stroke text files
 
     3.  **Outputs:** Raw data CSVs to be used in our dive analysis
         pipeline.
 
-31. ### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Sleep Estimates: quantifying measures of behavioral sleep <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+31. ### <img src="./media/image11.png" width="15" height="15" alt="Automation"/> Sleep Estimates: quantifying measures of behavioral sleep <img src="./media/image21.png" width="15" height="15" />
 
     1.  **Overview:** Estimate sleep time for northern elephant seals
         based on behavioral estimates of rest (cessation of stroking and
         flattening of vertical speed).
 
         1.  **Script:**
-            <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
-            ***11_Restimates.m*** <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
+            ***11_Restimates.m*** <img src="./media/image21.png" width="15" height="15" />
 
         2.  **Inputs:** MAT files, raw CSV dive data for Sleep,
             Kami/Stroke, or TDR-only recordings.
@@ -1617,7 +1612,7 @@ alt="A screenshot of a computer Description automatically generated" />
 
 <!-- -->
 
-1.  ### <img src="./media/image11.png" style="width:0.13542in;height:0.13542in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Load Data
+1.  ### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Load Data
 
     1.  **Overview:**
 
@@ -1638,12 +1633,12 @@ alt="A screenshot of a computer Description automatically generated" />
 
         1.  ***Sleep Data:  
             **SealID_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv*
-            <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+            <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
             *(SealID: testNN_Nickname)*
 
         2.  ***Stroke Data:  
             **SealID_stroke_raw_data.csv*
-            <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+            <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
             *(SealID example: 2012-PM_X106 post-molt trip)*
 
         3.  ***Dive Data:**  
@@ -1652,14 +1647,14 @@ alt="A screenshot of a computer Description automatically generated" />
         <!-- -->
 
         1.  **Outputs:** Preview images & NewRaw
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
 <img src="./media/image127.png" style="width:3.0298in;height:2.40625in"
 alt="Chart, line chart Description automatically generated" />
 <img src="./media/image128.png" style="width:2.86458in;height:2.38288in"
 alt="Chart Description automatically generated" />
 
-2.  ### <img src="./media/image11.png" style="width:0.13542in;height:0.13542in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Process Depth Data 
+2.  ### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Process Depth Data 
 
     1.  ### **Depth Correction**
 
@@ -1681,10 +1676,10 @@ alt="Chart Description automatically generated" />
             3.  Use this depth correction to adjust depth values.
 
         1.  **Inputs:** Uncorrected StrokeRaw.CorrectedDepth
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         2.  **Outputs:** Corrected StrokeRaw.CorrectedDepth
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         3.  **Instructions:** If you like the depth correction, run the
             next section. If not, adjust settings or inspect variables.
@@ -1721,10 +1716,10 @@ alt="Chart Description automatically generated" />
         <!-- -->
 
         1.  **Inputs:** Untruncated StrokeRaw
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         2.  **Outputs:** Truncated StrokeRaw
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         3.  **Instructions:** If you like the truncation, run the next
             section. If not, adjust settings or inspect variables.
@@ -1758,10 +1753,10 @@ alt="Chart Description automatically generated" />
         <!-- -->
 
         1.  **Inputs:** Untruncated StrokeRaw
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         2.  **Outputs:** Truncated StrokeRaw
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
         3.  **Instructions:** If you like the depth correction, run the
             next section. If not, adjust settings or inspect variables.
@@ -1770,12 +1765,12 @@ alt="Chart Description automatically generated" />
 
         1.  ***Sleep Data:  
             **SealID_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv*
-            <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+            <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
             *(SealID: testNN_Nickname)*
 
         2.  ***Stroke Data:  
             **SealID_stroke_raw_data.csv*
-            <img src="./media/image74.png" style="width:0.14944in;height:0.13805in" alt="A picture containing text, case Description automatically generated" />
+            <img src="./media/image74.png" width="15" height="15" alt="A picture containing text, case Description automatically generated" />
             *(SealID example: 2012-PM_X106 post-molt trip)*
 
         3.  ***Dive Data:**  
@@ -1784,7 +1779,7 @@ alt="Chart Description automatically generated" />
         <!-- -->
 
         1.  **Outputs:** Preview images & NewRaw
-            <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" />
+            <img src="./media/image21.png" width="15" height="15" />
 
             1.  TOPPID_SEALID_00\_**Dive-Example.png**
 
@@ -1819,7 +1814,7 @@ alt="Chart Description automatically generated" />
 
 5.  TOPPID_SEALID_03\_**Drift-Rate-Smoothed.png**
 
-### <img src="./media/image11.png" style="width:0.14167in;height:0.14167in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" style="width:0.20755in;height:0.13814in" alt="Glasses Icon | Line Iconset | IconsMind" /> Load Data
+### <img src="./media/image11.png" width="15" height="15"alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15"alt="Glasses Icon | Line Iconset | IconsMind" /> Load Data
 
 ### Appendix: Additional Sleep Scoring Examples
 
