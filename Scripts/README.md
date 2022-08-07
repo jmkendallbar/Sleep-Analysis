@@ -1,4 +1,4 @@
-# **Sleep Study Protocol**
+# **Sleep Data Processing Pipeline**
 
 For more information on Data Analysis steps and current progress, see
 GDrive 🗀 Sleep_Analysis \> 🗀 Scripts \> 00_Data_Analysis_Tracking.xlsx).
@@ -33,7 +33,6 @@ extensions:
 <img src="./media/image11.png" width="15" height="15" alt="Automation" /> Automated process  
 <img src="./media/image11.png" width="15" height="15" alt="Automation" /> <img src="./media/image12.png" width="15" height="15" alt="Manual Icon" /> Semi-automated process
 
-# Sleep Data Processing Pipeline
 
 ## [**STEP 00. Organize Metadata**](./00_Metadata)
 <img src="./media/image11.png" width="15" height="15" alt="Automation" /> <img src="./media/image12.png" width="15" height="15" alt="Manual icon" />  Metadata <img src="./media/image13.png" width="15" height="15" alt="Excel logo" /> <img src="./media/image14.png" width="15" height="15" alt="R_logo" /> and Video Scoring <img src="./media/image15.png" width="15" height="15" alt="BORIS logo" /><img src="./media/image14.png" width="15" height="15" alt="R_logo" />
