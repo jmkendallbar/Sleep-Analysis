@@ -637,7 +637,7 @@ with our study system (available as MainPRHTool_JKB.m)
         as shown below:
 
         1.  **Step 1:** Load file using BIOSIG toolbox through EEGLAB  
-            <img src="./media/image96.png"  width="15" height="15" alt="Graphical user interface Description automatically generated" />
+            <img src="./media/image96.png"  alt="Graphical user interface Description automatically generated" />
 
         2.  **Select un-rearranged EDF file output from
             Converter/Visualizer:** testNN_Nickname_01_ALL.edf
@@ -1458,7 +1458,7 @@ alt="A screenshot of a computer Description automatically generated" />
 
     1.  **Script:**
         <img src="./media/image11.png" style="width:0.14028in;height:0.14028in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" />
-        **MainCATSprhTool_JKB.m** <img src="./media/image21.png" style="width:0.15094in;height:0.15094in" /> **& Review in Google
+        **MainCATSprhTool_JKB.m** <img src="./media/image21.png"  width="15" height="15" /> **& Review in Google
         Maps or ArcGIS**
 
     2.  **Input:** testNN_Nickname_GPShits.xlsx
