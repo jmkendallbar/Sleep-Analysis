@@ -199,3 +199,17 @@ style="width:6.60864in;height:3.80208in" />
 | **Alt+W**                                                                        | ***WAKE (from sleep)***        | All           | Place comment at a transition **from sleep (light sleep, slow wave sleep, or REM sleep) to waking activity,** where low frequency brain activity coincides with lower and higher frequency oscillations in heart rate or large oscillations in heart rate which are directly linked to respiratory patterns. |
 | **Alt+J**                                                                        | ***JOLT (from sleep)***        | All           | Place comment at a transition **from sleep (light sleep, slow wave sleep, or REM sleep) to motion artifacts (active waking).** If the arousal does not cause a change in sleep state, the animal may go directly back into the previous state.                                                               |
 | **Alt+M**                                                                        | ***MVMT (from calm)***         | All           | Place comment at a transition **from calm or waking to movement** with the presence of motion artifacts.                                                                                                                                                                                                     |
+### <img src="../media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="../media/image12.png" width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> Load Data
+
+### Appendix: Additional Sleep Scoring Examples
+
+CALM \> SWS1 \> SWS2 example
+
+<img src="../media/image130.png" style="width:6.5in;height:1.64583in"
+alt="A picture containing timeline Description automatically generated" />
+
+CALM \> SWS1 \> REM1 example
+
+<img src="../media/image131.png" style="width:6.5in;height:1.59375in"
+alt="A picture containing table Description automatically generated" /><img src="../media/image132.png" style="width:6.5in;height:3.13542in"
+alt="Graphical user interface, application Description automatically generated" />

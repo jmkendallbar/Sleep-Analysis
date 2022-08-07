@@ -4,6 +4,18 @@
 * **00.B.** <img src="../media/image11.png" width="15" height="15" alt="Automation" /> <img src="../media/image12.png" width="15" height="15" alt="Manual icon" />  Location Data Processing
 * **00.C.** <img src="../media/image11.png" width="15" height="15" alt="Automation" /> <img src="../media/image12.png" width="15" height="15" alt="Manual icon" />  Video Scoring <img src="../media/image15.png" width="15" height="15" alt="BORIS logo" /> <img src="../media/image14.png" width="15" height="15" alt="R_logo" />
 
+Input data:
+
+1. **00_Sleep_Study_Metadata.xlsx** - Metadata for all studies
+2. **00_Ethogram.xlsx** - Ethograms
+3. testNN_Nickname_**00_Notes.xlsx** - Original data entered in Excel
+4. testNN_Nickname_**00_VideoScoringData** - Video Scoring Data
+
+Output Data: 
+
+1. **01_Sleep_Study_Metadata.csv** - Long format metadata for all animals
+2. testNN_Nickname_**00_Metadata.csv** - Metadata for single animal
+
 ## **STEP 00.A**. Notes & Metadata
 1.  **Overview:** Enter metadata manually and then transform metadata
     into long format CSV (less readable but more ideal across

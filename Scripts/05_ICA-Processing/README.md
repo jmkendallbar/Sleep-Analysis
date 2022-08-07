@@ -8,6 +8,12 @@
 * **05.E.** <img src="../media/image11.png" width="15" height="15" alt="Automation" /> Apply ICA weights to whole dataset <img src="../media/image21.png" width="15" height="15" alt="MATLAB" /> 
 * **05.F.** <img src="../media/image11.png" width="15" height="15" alt="Automation" /> Export processed EDF <img src="../media/image21.png" width="15" height="15" alt="MATLAB" />
 
+Input data: 
+
+1. testNN_Nickname_**Processed_ALL.edf** - NEED TO make these still
+2. testNN_Nickname_**05_Scoring_Land_ALL.edf** - Processed EDFs for sleep scoring
+3. testNN_Nickname_**05_Scoring_Water_ALL.edf** - 
+
 ### <img src="../media/image11.png" width="15" height="15" alt="Automation"/> <img src="../media/image12.png" width="15" height="15" alt="Manual"/> ICA Processing for Electrophysiological Data <img src="../media/image21.png" width="15" height="15" />
 
 ## **05.A.** <img src="../media/image11.png" width="15" height="15" alt="Automation" />  Load data into EEGLAB <img src="../media/image21.png" width="15" height="15" alt="MATLAB" /> 
@@ -21,8 +27,7 @@
         ICA_Automation.m
 
     2.  **Input:** ***testNN_Nickname_01_ALL_Rearranged.edf***
-        <img src="../media/image17.png" style="width:0.1548in;height:0.1548in"
-        alt="A picture containing text, clock Description automatically generated" />
+        <img src="../media/image17.png" width="15" height="15" alt="A picture containing text, clock Description automatically generated" />
 
     3.  **Outputs:** EEG variable through EEGLAB
 

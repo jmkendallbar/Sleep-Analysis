@@ -5,6 +5,15 @@
 * **01.C.** <img src="../media/image12.png" width="15" height="15" alt="Manual icon" />  Visualize Raw Data in LabChart <img src="../media/image19.png" width="15" height="15" alt="LabChart" />
 * **01.D.** <img src="../media/image12.png" width="15" height="15" alt="Manual icon" />  Raw Scoring <img src="../media/image19.png" width="15" height="15" alt="LabChart" />
 
+Data:
+
+1. testNN_Nickname_**01_ALL.dat** - Binary data straight from the tag
+2. testNN_Nickname_**01_ALL.mat** - Converted MATLAB file with all data
+3. testNN_Nickname_**01_ALL.edf** - Converted EDF file with all data
+4. testNN_Nickname_**01_GyroAccelCompass.csv** - Inertial Motion Sensor and Environmental Sensor Data
+5. testNN_Nickname_**01_ResetDelaysTimeDuration.csv** - Logger restart timepoints and durations
+6. testNN_Nickname_**01_MK10_ID.wch** - MK10 Tag data (only for wild animals)
+7. testNN_Nickname_**01_MK10_ID_decoded.csv** - MK10 Decoded Tag data (only for wild animals)
 
 ## * **01.A.** <img src="../media/image11.png" width="15" height="15" alt="Automation" />  <img src="../media/image12.png" width="15" height="15" alt="Manual icon" />  Download and convert data <img src="../media/image16.png" width="15" height="15" alt="Neurologger Converter & Visualizer Icon"/>
 

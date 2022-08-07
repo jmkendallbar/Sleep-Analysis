@@ -13,6 +13,14 @@
 * **02.E.** <img src="../media/image11.png" width="15" height="15" alt="Automation" />  <img src="../media/image12.png" width="15" height="15" alt="Manual icon" /> Run [`CATS Toolbox`](https://github.com/wgough/CATS-Methods-Materials)
 * **02.F.** <img src="../media/image11.png" width="15" height="15" alt="Automation" /> Save Calibrated & Processed Data
 
+Output data: Inertial Motion Sensor (Accel, Gyro, Compass) and Environmental Sensor Data (Pressure, Temperature, Illumination)
+with processed IMU data (pitch, roll, heading, position, ODBA, etc)
+
+1. testNN_Nickname_**02_Calibrated_Processed_MotionEnvSensors_10Hz.csv** - Calibrated and processed at 10Hz
+2. testNN_Nickname_**02_Calibrated_Processed_MotionEnvSensors_10Hz.mat** - Calibrated and processed at 10Hz
+3. testNN_Nickname_**02_Calibrated_Processed_MotionEnvSensors_25Hz.csv** - Calibrated and processed at 25Hz
+4. testNN_Nickname_**02_Calibrated_Processed_MotionEnvSensors_25Hz.mat** - Calibrated and processed at 25Hz
+
 ### <img src="../media/image11.png" width="15" height="15" alt="Automation"/> <img src="../media/image12.png" width="15" height="15" alt="Manual"/> Processing Motion & Environmental Sensors
 
 MATLAB v2020b: 🗀 Sleep_Analysis \> 🗀 Scripts \>

@@ -4,6 +4,10 @@
 * **03.A.** <img src="../media/image12.png" width="15" height="15" alt="Manual icon" /> Video Data Synchronization (if needed) <img src="../media/image13.png" width="15" height="15" alt="Excel logo" />
 * **03.B.** <img src="../media/image11.png" width="15" height="15" alt="Automation" /> Pairing Video Data to Motion Data <img src="../media/image14.png" width="15" height="15" alt="R_logo" />
 
+Output data: Pairing video scoring data to motion and environmental sensors
+
+1. testNN_Nickname_**03_VideoMotionData_25Hz.csv** - Video scoring data paired to motion and environmental sensing data.
+
 ### <img src="../media/image11.png" width="15" height="15" alt="Automation"/> <img src="../media/image12.png" width="15" height="15" alt="Manual"/> Pairing Motion & Video Data <img src="../media/image13.png"  width="15" height="15" alt="Microsoft Excel logo" /> <img src="../media/image21.png"  width="15" height="15" />
 
 ## **03.A.** <img src="../media/image12.png" width="15" height="15" alt="Manual icon" /> Video Data Synchronization (if needed) <img src="../media/image13.png" width="15" height="15" alt="Excel logo" />
