@@ -266,8 +266,7 @@ alt="Graphical user interface, application Description automatically generated" 
     1.  **Script:**
         <img src="./media/image11.png" width="15" height="15" alt="Automation"/> <img src="./media/image12.png" width="15" height="15" alt="Manual"/> **GUI through**
         Matlab app (Neurologger3ConverterAndVisualizer.exe
-        <img src="./media/image16.png"
-        style="width:0.1729in;height:0.17643in" />)
+        <img src="./media/image16.png" width="15" height="15" alt="Manual"/>)
 
     2.  **Input:** testNN_Nickname_01_ALL.dat - Binary data straight
         from the tag
