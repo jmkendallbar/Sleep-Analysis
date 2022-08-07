@@ -1327,7 +1327,7 @@ style="width:6.60864in;height:3.80208in" />
 
     3.  **Outputs:** something.
 
-### ![](./media/image20.png)<img src="./media/image12.png" width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Track Generation <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" /> <img src="./media/image21.png" width="15" height="15" /> <img src="./media/image23.jpeg" width="15" height="15" alt="ArcGIS logo" />
+### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> 3D Track Generation <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" /> <img src="./media/image21.png" width="15" height="15" /> <img src="./media/image23.jpeg" width="15" height="15" alt="ArcGIS logo" />
 
 ### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> Export Rates & Power from LabChart <img src="./media/image19.png" width="15" height="15" />
 
@@ -1384,7 +1384,7 @@ alt="A screenshot of a computer Description automatically generated" />
 
 10.  Make the following changes/additions in Columns X, Y, Z
 
-> <img src="./media/image120.png" width="15" height="15" /><img src="./media/image121.png" width="15" height="15" alt="Graphical user interface, application, table, Excel Description automatically generated" /><img src="./media/image122.png" width="15" height="15" />
+> <img src="./media/image120.png"/><img src="./media/image121.png" alt="Graphical user interface, application, table, Excel Description automatically generated" /><img src="./media/image122.png" />
 
 1.  Change the Time Mode (by right-clicking in the timeline on the
     bottom of the Chart View in LabChart) to **“Show as time of day”**
@@ -1504,7 +1504,7 @@ alt="A screenshot of a computer Description automatically generated" />
 
 > Pseudotrack & Geo-referenced pseudotrack based on speed estimates
 
-### <img src="./media/image11.png" style="width:0.1in;height:0.1in" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> Hypnotrack Visualizations <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" /> <img src="./media/image21.png" width="15" height="15" /> <img src="./media/image23.jpeg" width="15" height="15" alt="ArcGIS logo" />
+### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /><img src="./media/image12.png" width="15" height="15" alt="Glasses Icon | Line Iconset | IconsMind" /> Hypnotrack Visualizations <img src="./media/image14.png" width="15" height="15" alt="RStudio logo" /> <img src="./media/image21.png" width="15" height="15" /> <img src="./media/image23.jpeg" width="15" height="15" alt="ArcGIS logo" />
 
 ### <img src="./media/image11.png" width="15" height="15" alt="RPA Robotic Process Automation icon PNG and SVG Vector Free Download" /> Generate Hypnotrack <img src="./media/image21.png" width="15" height="15" />
 
