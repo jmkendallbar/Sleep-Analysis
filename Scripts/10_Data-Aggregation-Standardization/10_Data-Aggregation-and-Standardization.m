@@ -3,13 +3,16 @@
 %% 00.A - READ IN RAW DIVE DATA, MAT FILE, AND STROKE DATA
 clear all
 %parfor k=1:418
-for k=404:418
+for k=1:1 %:418
     close all
     k
     % Data_path = 'C:\Users\fbar\Documents\Sleep_Analysis\Data'
-    Data_path='G:\My Drive\Dissertation Sleep\Sleep_Analysis\Data';
+    Data_path ='G:\My Drive\Dissertation Sleep\Sleep_Analysis\Data';
+    MAT_path = '10_MAT processed files TV3 NESE';
+    RAW_path = '11_Restimates_Raw';
+    Image_Output_path = '10_NewRaw_Track_Images';
     cd(Data_path);
-    cd('11_Restimates_Raw');
+    cd(RAW_path);
     
     Raw_Files = dir('*_raw_data*.csv');
     Raw_Filenames = sort({Raw_Files.name}).';
@@ -56,6 +59,18 @@ for k=404:418
     %% 00.A - LOAD DIVE DATA
     if haveDiveData & haveStrokeData==0
     % Load raw data; ignore header if has one
+        TAGID_full = extractAfter(Identifier,strcat(TOPPID,'_'));
+        TAGID = extractBefore(TAGID_full,'_DAprep_full');
+        cd(Data_path);
+    
+        AF_Metadata = readtable('10_NES_AdultFemaleQC.xlsx');
+        Seals_Used.TDR1(k) = {'yes'};
+        if contains(string(TAGID),string(AF_Metadata.TDR1ID(find(AF_Metadata.TOPPID==str2double(TOPPID)))))==0
+            Seals_Used.TDR1(k) = {'no'};
+            continue
+        end
+        
+        cd(RAW_path);
         fid= fopen (Raw_Files(k).name,'r');
         for i = 1:60
             mn=fgetl(fid);
@@ -88,6 +103,7 @@ for k=404:418
     %% 00.B - LOAD SEAL SLEEP DATA
     if haveSleepData
         cd(Data_path);
+        
         % See all SealIDs
         SealIDs = ["test12_Wednesday",... % Recording 1
             "test20_SnoozySuzy",...       % Recording 2
@@ -129,7 +145,7 @@ for k=404:418
         TOPPID = char(info.value('TOPP.ID'))
         Seals_Used.TOPPID(k)=cellstr(TOPPID); % 
 
-        cd('11_Restimates_Raw')
+        cd(RAW_path)
         % Load raw data 
         NewRaw          = readtable(strcat(Identifier,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')); % load data
         NewRaw.datetime = datetime(NewRaw.R_Time,'InputFormat','uuuu-MM-dd HH:mm:ss');
@@ -153,12 +169,12 @@ for k=404:418
         SamplingInterval = median(NewRaw.difftime);
         
         cd(Data_path)
-        cd('10_MAT processed files TV3 NESE') %go to mat file directory
+        cd(MAT_path) %go to mat file directory
         MATfile = dir([num2str(TOPPID) '*.mat']);
         haveMAT = ~isempty(MATfile);           
 
         cd(Data_path);
-        cd('10_NewRaw_Track_Images')
+        cd(Image_Output_path)
 
         disp('Section 00.A Complete: Data Imported')
     end
@@ -194,7 +210,7 @@ for k=404:418
         SamplingInterval = round(median(diff(NewRaw.time))*86400);   
 
         cd(Data_path);
-        cd('10_NewRaw_Track_Images')
+        cd(Image_Output_path)
 
         % Generate conditions to base analysis off of
         haveStrokeCount = sum(strcmp('COUNT',StrokeRaw.Properties.VariableNames));
@@ -207,7 +223,7 @@ for k=404:418
 
 if haveStrokeData | haveDiveData
         cd(Data_path);
-        cd('10_MAT processed files TV3 NESE') %go to mat file directory
+        cd(MAT_path) %go to mat file directory
         MATfile = dir([num2str(TOPPID) '*.mat']);
         haveMAT = ~isempty(MATfile);     
 
@@ -217,7 +233,7 @@ if haveStrokeData | haveDiveData
 
             SEALID = convertCharsToStrings(t.MetaData.FieldID);
             Seals_Used.SEALID(k)=convertCharsToStrings(t.MetaData.FieldID); %
-            Seals_Used.TOPPID(k)=t.TOPPID; % 
+            Seals_Used.TOPPID(k)={t.TOPPID}; % 
             Seals_Used.FIELDID(k) = convertCharsToStrings(t.MetaData.FieldID);
             Seals_Used.Mortality_Probable(k) = isempty(t.MetaData.ArriveLoc);
             Seals_Used.Deployment_Type(k) = convertCharsToStrings(t.MetaData.DeploymentType);
@@ -254,13 +270,13 @@ if haveStrokeData | haveDiveData
                 if abs(NewRaw.CorrectedDepth(startix)) > 20 | abs(NewRaw.CorrectedDepth(endix)) > 20
                     if contains(Identifier,t.MetaData.TDRused.Dive2TagID) | (convertCharsToStrings(t.MetaData.TDRused.DiveTagType) ~= 'Mk9' &  convertCharsToStrings(t.MetaData.TDRused.DiveTagType) ~= 'CTD')
                         
-                        cd('G:\My Drive\Dissertation Sleep\Sleep_Analysis\Data\10_Raw iknos dive files NESE')
+                        cd(Data_path)
+                        cd('10_Raw iknos dive files NESE')
                         
                         if ~isempty(t.MetaData.TDRused.DiveTagID)
                             OtherTDRfile = dir([num2str(TOPPID) '*' t.MetaData.TDRused.DiveTagID '*raw_data.csv']);
                         else
                             OtherTDRfile = dir([num2str(TOPPID) '*' t.MetaData.TDRused.DiveTagType '*raw_data.csv']);
-                            
                         end
                         haveOtherTDR = ~isempty(OtherTDRfile);
                         if haveOtherTDR
@@ -312,7 +328,7 @@ if haveStrokeData | haveDiveData
             CorrTrackfile = dir([num2str(TOPPID) '*foieGras_crw.csv']);
             haveCorrTrack = ~isempty(CorrTrackfile);
 
-            if haveCorrTrack
+            if haveCorrTrack & height(t.Track_Best)==0
                 
                 CorrTrack = readtable(CorrTrackfile.name);
                 CorrTrack.DN = datenum(CorrTrack.date);
@@ -338,7 +354,7 @@ if haveStrokeData | haveDiveData
             end
             
             cd(Data_path);
-            cd('10_NewRaw_Track_Images')
+            cd(Image_Output_path)
 
             % Inspect track for this animal
             figure
@@ -617,7 +633,7 @@ if haveStrokeData | haveDiveData
         title(strcat('Seal: ',SEALID, ' TOPPID:',TOPPID,' Close-up to Inspect Alignment'));
 
         cd(Data_path);
-        cd('10_NewRaw_Track_Images')
+        cd(Image_Output_path)
         
         print('-painters','-dpng', strcat(TOPPID,'_',SEALID,'_10_01_StrokeRaw-NewRaw_Alignment-Check.png'))
         disp('Section 01.C Complete: Inspect Alignment.')

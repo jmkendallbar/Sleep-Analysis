@@ -1,6 +1,6 @@
 %% 09 Hypnotracks - Pairing sleep data with motion
 % Processing Step 09.A: Read in Metadata
-s = 9; % PICK A SEAL ID Recording # (see list below)
+s = 13; % PICK A SEAL ID Recording # (see list below)
 
 % Set data directory; change as necessary.
 Data_path='G:\My Drive\Dissertation Sleep\Sleep_Analysis\Data';
@@ -243,169 +243,228 @@ plot(Gw(:,3))
 
 %%
 % Read in hypnotrack to play with
+seals = [9 11 13];
 
-NewRaw = readtable(strcat(SealIDs(s),'_09_Hypnotrack_JKB_1Hz.csv'));
+for ii=1:length(seals)
+    
+    s = seals(ii)
+    
+    NewRaw = readtable(strcat(SealIDs(s),'_09_Hypnotrack_JKB_1Hz.csv'));
 
-%% CALCULATE SLEEP SPIRAL STATISTICS
+    %% CALCULATE SLEEP SPIRAL STATISTICS
 
-% DEFINITIONS:
-% Nap: consecutive segment of sleep
-% Right Turn: turning right (diff(heading) between  0 and POS. pi or jumping to NEG. ~2pi
-% Left Turn: turning left (diff(heading) between  0 and NEG. pi or jumping to POS. ~2pi
-% Right Spin: turning right past 180 causing jump of NEG. 2pi
-% Left Spin: turning left past 180 causing jump of POS. 2pi
-% Spiral: two (or more) consecutive spins past 180 in the same direction
-% Loop: a single loop of a spiral (between two same-direction spins past 180)
+    % DEFINITIONS:
+    % Nap: consecutive segment of sleep
+    % Right Turn: turning right (diff(heading) between  0 and POS. pi or jumping to NEG. ~2pi
+    % Left Turn: turning left (diff(heading) between  0 and NEG. pi or jumping to POS. ~2pi
+    % Right Spin: turning right past 180 causing jump of NEG. 2pi
+    % Left Spin: turning left past 180 causing jump of POS. 2pi
+    % Spiral: two (or more) consecutive spins past 180 in the same direction
+    % Loop: a single loop of a spiral (between two same-direction spins past 180)
 
-NewRaw.is_sleep = NewRaw.Simple_Sleep_Num >=4; %IF SWS or REM assign 1
-NewRaw.is_REM   = NewRaw.Sleep_Num == 6 | NewRaw.Sleep_Num == 7; % if REM, assign 1
+    NewRaw.is_sleep = NewRaw.Simple_Sleep_Num >=4; %IF SWS or REM assign 1
+    NewRaw.is_REM   = NewRaw.Sleep_Num == 6 | NewRaw.Sleep_Num == 7; % if REM, assign 1
 
-% Calculate heading change (1st derivative of heading)
-NewRaw.headdiff  = [0; diff(NewRaw.heading)]; 
-NewRaw.RightSpin = NewRaw.headdiff < -pi ; % a right spin past 180 South is a diff of ~ -2*pi
-NewRaw.LeftSpin  = NewRaw.headdiff > pi ;  % a left spin past 180 South is a diff of ~ +2*pi
+    % Calculate heading change (1st derivative of heading)
+    NewRaw.headdiff  = [0; diff(NewRaw.heading)]; 
+    NewRaw.RightSpin = NewRaw.headdiff < -pi ; % a right spin past 180 South is a diff of ~ -2*pi
+    NewRaw.LeftSpin  = NewRaw.headdiff > pi ;  % a left spin past 180 South is a diff of ~ +2*pi
 
-% Creating heading column that does not jump between 180 and -180 (for smooth animations)
-% 1. Create cumulative sum of right turns and left turns to keep track of
-% overall turning (past 180 South) to the left or right.
-NewRaw.CumulTurns_Rpos = cumsum(NewRaw.RightSpin - NewRaw.LeftSpin); 
-% 2. Correct heading to add 2*pi to the heading for every right spin past 180 (and
-% subtract 2*pi from the heading for every left spin past 180).
-NewRaw.headcorr_CumulTurns = NewRaw.heading + 2*pi*(NewRaw.CumulTurns_Rpos);
-% 3. Check that that gets rid of large jumps in heading for smooth animations.
-NewRaw.headcorrdiff = [diff(NewRaw.headcorr_CumulTurns); 0];
-max(NewRaw.headcorrdiff)
+    % Creating heading column that does not jump between 180 and -180 (for smooth animations)
+    % 1. Create cumulative sum of right turns and left turns to keep track of
+    % overall turning (past 180 South) to the left or right.
+    NewRaw.CumulTurns_Rpos = cumsum(NewRaw.RightSpin - NewRaw.LeftSpin); 
+    min(NewRaw.CumulTurns_Rpos) % at any time, what was the most NET turns to the left
+    max(NewRaw.CumulTurns_Rpos) % at any time, what was the most NET turns to the right
+    % 2. Correct heading to add 2*pi to the heading for every right spin past 180 (and
+    % subtract 2*pi from the heading for every left spin past 180).
+    NewRaw.headcorr_CumulTurns = NewRaw.heading + 2*pi*(NewRaw.CumulTurns_Rpos);
+    % 3. Check that that gets rid of large jumps in heading for smooth animations.
+    NewRaw.headcorrdiff = [diff(NewRaw.headcorr_CumulTurns); 0];
+    max(NewRaw.headcorrdiff)
 
-% Defining turning left and turning right
-% LEFT TURNS: either slow (< pi/s or < 180 degrees/second) turns to the left (negative)
-% OR sudden jumps (> 180 deg/s) "to the right" (positive)
-NewRaw.TurningLeftCriteria = ((NewRaw.headdiff <= 0 & NewRaw.headdiff >= -pi) | ...
-                        (NewRaw.headdiff > pi ));
-% RIGHT TURNS: either slow (< pi/s or < 180 degrees/second) turns to the right (positive)
-% OR sudden jumps (> 180 deg/s) "to the left" (negative)
-NewRaw.TurningRightCriteria = ((NewRaw.headdiff <= pi & NewRaw.headdiff >= 0) | ...
-                        (NewRaw.headdiff < -pi ));                        
+    % Defining turning left and turning right
+    % LEFT TURNS: either slow (< pi/s or < 180 degrees/second) turns to the left (negative)
+    % OR sudden jumps (> 180 deg/s) "to the right" (positive)
+    NewRaw.TurningLeftCriteria = ((NewRaw.headdiff <= 0 & NewRaw.headdiff >= -pi) | ...
+                            (NewRaw.headdiff > pi ));
+    % RIGHT TURNS: either slow (< pi/s or < 180 degrees/second) turns to the right (positive)
+    % OR sudden jumps (> 180 deg/s) "to the left" (negative)
+    NewRaw.TurningRightCriteria = ((NewRaw.headdiff <= pi & NewRaw.headdiff >= 0) | ...
+                            (NewRaw.headdiff < -pi ));                        
 
-% Create table with each consecutive (OCEAN) nap                   
-Nap_Criteria        = NewRaw.is_sleep & NewRaw.Water_Num ~= 0; % Looking for naps NOT on land
-Naps                = table(yt_setones(Nap_Criteria),'VariableNames',{'Indices'});
-Naps.Duration_s     = (Naps.Indices(:,2)-Naps.Indices(:,1));
-Naps                = Naps(find(Naps.Duration_s~=0),:);
+    % Create table with each consecutive (OCEAN) nap                   
+    Nap_Criteria        = NewRaw.is_sleep & NewRaw.Water_Num ~= 0; % Looking for naps NOT on land
+    Naps                = table(yt_setones(Nap_Criteria),'VariableNames',{'Indices'});
+    Naps.Duration_s     = (Naps.Indices(:,2)-Naps.Indices(:,1));
+    Naps                = Naps(find(Naps.Duration_s~=0),:);
 
-NewRaw.SleepSpinNum(:) = nan;
-for d = 1:height(Naps)
-    startix = Naps.Indices(d,1);
-    endix = Naps.Indices(d,2);
-    duration = (endix-startix)+1;
-    Naps.MostlySimpleSleepNum(d) = mode(NewRaw.Simple_Sleep_Num(startix:endix)); % Most common sleep stage for the nap period
-    Naps.REM_seconds(d) = sum(NewRaw.is_REM(startix:endix)); % seconds spent in REM in the nap
-    Naps.REM_percentage(d) = sum(NewRaw.is_REM(startix:endix))/sum(NewRaw.is_sleep(startix:endix));  % percent of nap spent in REM
-    NewRaw.standardsleepxposition(startix:endix) = NewRaw.x(startix:endix)-NewRaw.x(startix) + d*20; % zero'd x position plus offset
-    NewRaw.standardsleepyposition(startix:endix) = NewRaw.y(startix:endix)-NewRaw.y(startix); % zero'd y position 
-    NewRaw.standardsleepzposition(startix:endix) = NewRaw.z(startix:endix)-NewRaw.z(startix); % zero'd z position
-    Naps.RightSpins(d) = sum(NewRaw.RightSpin(startix:endix)); % count number of right spins past 180 during nap
-    Naps.LeftSpins(d)  = sum(NewRaw.LeftSpin(startix:endix));  % count number of left spins past 180 during nap
-    Naps.OverallSpins(d) = Naps.RightSpins(d) - Naps.LeftSpins(d); % overall spins right or left
-    % Creating a new column in NewRaw where 0 is no turn, positive is a right spin past 180
-    % and negative is a left spin past 180
-    NewRaw.SleepSpinNum(startix:endix) = cumsum(NewRaw.RightSpin(startix:endix))-cumsum(NewRaw.LeftSpin(startix:endix));
+    NewRaw.SleepSpinNum(:) = nan;
+    for d = 1:height(Naps)
+        startix = Naps.Indices(d,1);
+        endix = Naps.Indices(d,2);
+        duration = (endix-startix)+1;
+        Naps.MostlySimpleSleepNum(d) = mode(NewRaw.Simple_Sleep_Num(startix:endix));
+        Naps.MostlyWaterNum(:) = mode(NewRaw.Water_Num(startix:endix));
+        Naps.Simple_Sleep_Code(:) = NewRaw.Simple_Sleep_Code(find(NewRaw.Simple_Sleep_Num==Naps.MostlySimpleSleepNum(d),1));
+        Naps.Water_Code(:) = NewRaw.Water_Code(find(NewRaw.Water_Num==Naps.MostlyWaterNum(d),1));
+        Naps.REM_seconds(d) = sum(NewRaw.is_REM(startix:endix)); % seconds spent in REM in the nap
+        Naps.REM_percentage(d) = sum(NewRaw.is_REM(startix:endix))/sum(NewRaw.is_sleep(startix:endix));  % percent of nap spent in REM
+        NewRaw.standardsleepxposition(startix:endix) = NewRaw.x(startix:endix)-NewRaw.x(startix) + d*20; % zero'd x position plus offset
+        NewRaw.standardsleepyposition(startix:endix) = NewRaw.y(startix:endix)-NewRaw.y(startix); % zero'd y position 
+        NewRaw.standardsleepzposition(startix:endix) = NewRaw.z(startix:endix)-NewRaw.z(startix); % zero'd z position
+        Naps.RightSpins(d) = sum(NewRaw.RightSpin(startix:endix)); % count number of right spins past 180 during nap
+        Naps.LeftSpins(d)  = sum(NewRaw.LeftSpin(startix:endix));  % count number of left spins past 180 during nap
+        Naps.OverallSpins(d) = Naps.RightSpins(d) - Naps.LeftSpins(d); % overall spins right or left
+        % Creating a new column in NewRaw where 0 is no turn, positive is a right spin past 180
+        % and negative is a left spin past 180
+        NewRaw.SleepSpinNum(startix:endix) = cumsum(NewRaw.RightSpin(startix:endix))-cumsum(NewRaw.LeftSpin(startix:endix));
+    end
+
+    NewRaw.diffSleepSpinNum = [0; diff(NewRaw.SleepSpinNum)];
+
+    % FIND SPIRALS
+    % Criteria: Find consecutive chunks where there are no spins or spins (past 180) to
+    % the left. Filter results by showing only spirals with at least 2 left spins.
+    LeftSpirals = table(yt_setones(NewRaw.diffSleepSpinNum <= 0 & NewRaw.diffSleepSpinNum >= -1),'VariableNames',{'Indices'});
+    LeftSpirals.Duration_s   = (LeftSpirals.Indices(:,2)-LeftSpirals.Indices(:,1));
+    LeftSpirals.direction(:) = {'left'};
+
+    RightSpirals = table(yt_setones(NewRaw.diffSleepSpinNum >= 0 & NewRaw.diffSleepSpinNum <= 1),'VariableNames',{'Indices'});
+    RightSpirals.Duration_s   = (RightSpirals.Indices(:,2)-RightSpirals.Indices(:,1));
+    RightSpirals.direction(:) = {'right'};
+
+    Spirals = vertcat(LeftSpirals,RightSpirals);
+    Spirals.Start_Turns    = NewRaw.SleepSpinNum(Spirals.Indices(:,1));
+    Spirals.End_Turns      = NewRaw.SleepSpinNum(Spirals.Indices(:,2));
+    Spirals.totalturns     = Spirals.End_Turns - Spirals.Start_Turns;
+    Spirals                = Spirals(find(abs(Spirals.totalturns) > 1),:);
+    Spirals.Start_Depth    = NewRaw.Depth(Spirals.Indices(:,1));
+    Spirals.End_Depth      = NewRaw.Depth(Spirals.Indices(:,2));
+    Spirals.Start_SleepCode    = NewRaw.Simple_Sleep_Code(Spirals.Indices(:,1));
+    Spirals.End_SleepCode      = NewRaw.Simple_Sleep_Code(Spirals.Indices(:,2));
+
+%     scatter3(NewRaw.standardsleepxposition, NewRaw.standardsleepyposition, NewRaw.standardsleepzposition,...
+%         [],NewRaw.Simple_Sleep_Num,'filled')
+
+    NewRaw.standardspiralxposition(:) = nan;
+    NewRaw.standardspiralyposition(:) = nan;
+    NewRaw.standardspiralzposition(:) = nan;
+
+    for d = 1:height(Spirals)
+        startix = Spirals.Indices(d,1);
+        endix = Spirals.Indices(d,2);
+        duration = (endix-startix)+1;
+        Spirals.MostlySimpleSleepNum(d) = mode(NewRaw.Simple_Sleep_Num(startix:endix));
+        Spirals.MostlyWaterNum(:) = mode(NewRaw.Water_Num(startix:endix));
+        Spirals.Simple_Sleep_Code(:) = NewRaw.Simple_Sleep_Code(find(NewRaw.Simple_Sleep_Num==Spirals.MostlySimpleSleepNum(d),1));
+        Spirals.Water_Code(:) = NewRaw.Water_Code(find(NewRaw.Water_Num==Spirals.MostlyWaterNum(d),1));
+        Spirals.REM_seconds(d) = sum(NewRaw.is_REM(startix:endix));
+        Spirals.REM_percentage(d) = sum(NewRaw.is_REM(startix:endix))/sum(NewRaw.is_sleep(startix:endix));
+        Spirals.sleep(d) = sum(NewRaw.is_sleep(startix:endix));
+        Spirals.Water_Num(d) = mode(NewRaw.Water_Num(startix:endix));
+        NewRaw.is_SleepSpiral(startix:endix) = 1;
+        NewRaw.SleepSpiralDirection(startix:endix) = {Spirals.direction(d)};
+        NewRaw.SleepSpiralTurns(startix:endix) = Spirals.totalturns(d);
+        NewRaw.SleepSpiralDuration_s(startix:endix) = Spirals.Duration_s(d);
+        NewRaw.standardspiralxposition(startix:endix) = NewRaw.x(startix:endix)-NewRaw.x(startix) + d*20;
+        NewRaw.standardspiralyposition(startix:endix) = NewRaw.y(startix:endix)-NewRaw.y(startix);
+        NewRaw.standardspiralzposition(startix:endix) = NewRaw.z(startix:endix)-NewRaw.z(startix);
+        %Spirals.LeftTurns(d) = sum(NewRaw.LeftSpin(startix:endix));
+        %NewRaw.SleepSpirals(startix:endix) = 1;
+        % Creating a new column where 0 is no turn, negative are turns to left and
+        % positive are turns to the right
+        %NewRaw.SpiralNum(startix:endix) = cumsum(NewRaw.RightSpin(startix:endix))-cumsum(NewRaw.LeftSpin(startix:endix));
+    end
+
+
+    % scatter3(NewRaw.standardspiralxposition, NewRaw.standardspiralyposition, NewRaw.standardspiralzposition,...
+    %     [],NewRaw.Simple_Sleep_Num,'filled')
+
+    Loop_Criteria        = NewRaw.is_SleepSpiral & NewRaw.diffSleepSpinNum == 0; % Looking for curls in sleep spirals (between areas where a spin is detected (diffSleepSpinNum==1))
+    Loops                = table(yt_setones(Loop_Criteria),'VariableNames',{'Indices'});
+    Loops.Duration_s     = (Loops.Indices(:,2)-Loops.Indices(:,1));
+    Loops                = Loops(find(Loops.Duration_s~=0),:);
+
+    NewRaw.standardloopxposition(:) = nan;
+    NewRaw.standardloopyposition(:) = nan;
+    NewRaw.standardloopzposition(:) = nan;
+
+    for d = 1:height(Loops)
+        startix = Loops.Indices(d,1);
+        endix = Loops.Indices(d,2);
+        duration = (endix-startix)+1;
+        Loops.MostlySimpleSleepNum(d) = mode(NewRaw.Simple_Sleep_Num(startix:endix));
+        Loops.MostlyWaterNum(:) = mode(NewRaw.Water_Num(startix:endix));
+        Loops.Simple_Sleep_Code(:) = NewRaw.Simple_Sleep_Code(find(NewRaw.Simple_Sleep_Num==Loops.MostlySimpleSleepNum(d),1));
+        Loops.Water_Code(:) = NewRaw.Water_Code(find(NewRaw.Water_Num==Loops.MostlyWaterNum(d),1));
+        Loops.REM_seconds(d) = sum(NewRaw.is_REM(startix:endix));
+        Loops.REM_percentage(d) = sum(NewRaw.is_REM(startix:endix))/sum(NewRaw.is_sleep(startix:endix));
+        Loops.sleep(d) = sum(NewRaw.is_sleep(startix:endix));
+        Loops.mean_speed(d) = mean(NewRaw.speed(startix:endix));
+        Loops.diameter(d) = (Loops.mean_speed(d) * Loops.Duration_s(d))/pi;
+        NewRaw.LoopNum(startix:endix) = d;
+        NewRaw.LoopDur(startix:endix) = Loops.Duration_s(d);
+        NewRaw.LoopModeSleepCode(startix:endix) = Loops.MostlySimpleSleepNum(d);
+        NewRaw.standardloopxposition(startix:endix) = NewRaw.x(startix:endix)-NewRaw.x(startix);
+        NewRaw.standardloopyposition(startix:endix) = NewRaw.y(startix:endix)-NewRaw.y(startix);
+        NewRaw.standardloopzposition(startix:endix) = NewRaw.z(startix:endix)-NewRaw.z(startix) + d*20;
+    end
+
+    Loops_Only = NewRaw(find(~isnan(NewRaw.standardloopxposition)),:);
+    Naps_Only = NewRaw(find(~isnan(NewRaw.standardsleepxposition)),:);
+    Spirals_Only = NewRaw(find(~isnan(NewRaw.standardspiralxposition)),:);
+
+    % scatter3(NewRaw.standardloopxposition, NewRaw.standardloopyposition, NewRaw.standardloopzposition,...
+    %     [],NewRaw.Simple_Sleep_Num,'filled')
+
+    Spirals.SealID(:) = SealIDs(s);
+    Naps.SealID(:) = SealIDs(s);
+    Loops.SealID(:) = SealIDs(s);
+    Spirals.Water_Code(:) = NewRaw.Water_Code(find(NewRaw.Water_Num==3,1));
+    Spirals.Water_Code(:) = NewRaw.Water_Code(find(NewRaw.Water_Num==3,1));
+
+
+    writetable(Spirals,strcat(SealIDs(s),'_09_Spirals_Stats.csv'));
+    writetable(Loops,strcat(SealIDs(s),'_09_Loops_Stats.csv'));
+    writetable(Naps,strcat(SealIDs(s),'_09_Naps_Stats.csv'));
+    
+    writetable(Loops_Only,strcat(SealIDs(s),'_09_Hypnotrack_1Hz_All_Loops.csv'));
+    writetable(Spirals_Only,strcat(SealIDs(s),'_09_Hypnotrack_1Hz_All_Sleep_Spirals.csv'));
+    writetable(Naps_Only,strcat(SealIDs(s),'_09_Hypnotrack_1Hz_All_Naps.csv'));
+    
+    SealIDs(s)
+    sum(NewRaw.is_REM & NewRaw.Water_Num==3)/sum(NewRaw.is_sleep & NewRaw.Water_Num==3) % REM sleep percentage overall
+    % Percent of Open-Ocean REM sleep that is 
+    sum(NewRaw.is_SleepSpiral & NewRaw.is_REM & NewRaw.Water_Num==3)/sum(NewRaw.is_REM & NewRaw.Water_Num==3)
+    sum(NewRaw.is_SleepSpiral & NewRaw.is_REM==0 & NewRaw.is_sleep & NewRaw.Water_Num==3)/sum(NewRaw.is_REM==0 & NewRaw.is_sleep & NewRaw.Water_Num==3)
+    sum(NewRaw.is_SleepSpiral & NewRaw.is_sleep & NewRaw.Water_Num==3)/sum(NewRaw.is_sleep & NewRaw.Water_Num==3)
+    
+    
+    if ii==length(seals)
+        Spirals_ALL = vertcat(Spirals_ALL,Spirals);
+        Loops_ALL = vertcat(Loops_ALL,Loops);
+        Naps_ALL = vertcat(Naps_ALL,Naps);
+        
+        writetable(Spirals_ALL,strcat('09_ALL_ANIMALS_Spirals_Stats.csv'));
+        writetable(Loops_ALL,strcat('09_ALL_ANIMALS_Loops_Stats.csv'));
+        writetable(Naps_ALL,strcat('09_ALL_ANIMALS_Naps_Stats.csv'));
+    elseif ii==1
+        Spirals_ALL = Spirals;
+        Loops_ALL = Loops;
+        Naps_ALL = Naps;
+    else
+        Spirals_ALL = vertcat(Spirals_ALL,Spirals);
+        Loops_ALL = vertcat(Loops_ALL,Loops);
+        Naps_ALL = vertcat(Naps_ALL,Naps);
+    end
+    
 end
 
-NewRaw.diffSleepSpinNum = [0; diff(NewRaw.SleepSpinNum)];
+sum(NewRaw.is_REM & NewRaw.Water_Num~=0)/sum(NewRaw.is_sleep & NewRaw.Water_Num~=0)
+% Percent of Open-Ocean REM sleep that is 
+sum(NewRaw.is_SleepSpiral & NewRaw.is_REM & NewRaw.Water_Num~=0)/sum(NewRaw.is_REM & NewRaw.Water_Num~=0)
 
-% FIND SPIRALS
-% Criteria: Find consecutive chunks where there are no spins or spins (past 180) to
-% the left. Filter results by showing only spirals with at least 2 left spins.
-LeftSpirals = table(yt_setones(NewRaw.diffSleepSpinNum <= 0 & NewRaw.diffSleepSpinNum >= -1),'VariableNames',{'Indices'});
-LeftSpirals.Duration_s   = (LeftSpirals.Indices(:,2)-LeftSpirals.Indices(:,1));
-LeftSpirals.direction(:) = {'left'};
-
-RightSpirals = table(yt_setones(NewRaw.diffSleepSpinNum >= 0 & NewRaw.diffSleepSpinNum <= 1),'VariableNames',{'Indices'});
-RightSpirals.Duration_s   = (RightSpirals.Indices(:,2)-RightSpirals.Indices(:,1));
-RightSpirals.direction(:) = {'right'};
-
-Spirals = vertcat(LeftSpirals,RightSpirals);
-Spirals.Start_Turns    = NewRaw.SleepSpinNum(Spirals.Indices(:,1));
-Spirals.End_Turns      = NewRaw.SleepSpinNum(Spirals.Indices(:,2));
-Spirals.totalturns     = Spirals.End_Turns - Spirals.Start_Turns;
-Spirals                = Spirals(find(abs(Spirals.totalturns) > 1),:);
-Spirals.Start_Depth    = NewRaw.Depth(Spirals.Indices(:,1));
-Spirals.End_Depth      = NewRaw.Depth(Spirals.Indices(:,2));
-Spirals.Start_SleepCode    = NewRaw.Simple_Sleep_Code(Spirals.Indices(:,1));
-Spirals.End_SleepCode      = NewRaw.Simple_Sleep_Code(Spirals.Indices(:,2));
-
-scatter3(NewRaw.standardsleepxposition, NewRaw.standardsleepyposition, NewRaw.standardsleepzposition,...
-    [],NewRaw.Simple_Sleep_Num,'filled')
-
-NewRaw.standardspiralxposition(:) = nan;
-NewRaw.standardspiralyposition(:) = nan;
-NewRaw.standardspiralzposition(:) = nan;
-
-for d = 1:height(Spirals)
-    startix = Spirals.Indices(d,1);
-    endix = Spirals.Indices(d,2);
-    duration = (endix-startix)+1;
-    Spirals.MostlySimpleSleepNum(d) = mode(NewRaw.Simple_Sleep_Num(startix:endix));
-    Spirals.REM_seconds(d) = sum(NewRaw.is_REM(startix:endix));
-    Spirals.REM_percentage(d) = sum(NewRaw.is_REM(startix:endix))/sum(NewRaw.is_sleep(startix:endix));
-    Spirals.sleep(d) = sum(NewRaw.is_sleep(startix:endix));
-    NewRaw.is_SleepSpiral(startix:endix) = 1;
-    NewRaw.SleepSpiralDirection(startix:endix) = {Spirals.direction(d)};
-    NewRaw.SleepSpiralTurns(startix:endix) = Spirals.totalturns(d);
-    NewRaw.SleepSpiralDuration_s(startix:endix) = Spirals.Duration_s(d);
-    NewRaw.standardspiralxposition(startix:endix) = NewRaw.x(startix:endix)-NewRaw.x(startix) + d*20;
-    NewRaw.standardspiralyposition(startix:endix) = NewRaw.y(startix:endix)-NewRaw.y(startix);
-    NewRaw.standardspiralzposition(startix:endix) = NewRaw.z(startix:endix)-NewRaw.z(startix);
-    %Spirals.LeftTurns(d) = sum(NewRaw.LeftSpin(startix:endix));
-    %NewRaw.SleepSpirals(startix:endix) = 1;
-    % Creating a new column where 0 is no turn, negative are turns to left and
-    % positive are turns to the right
-    %NewRaw.SpiralNum(startix:endix) = cumsum(NewRaw.RightSpin(startix:endix))-cumsum(NewRaw.LeftSpin(startix:endix));
-end
-
-scatter3(NewRaw.standardspiralxposition, NewRaw.standardspiralyposition, NewRaw.standardspiralzposition,...
-    [],NewRaw.Simple_Sleep_Num,'filled')
-
-Loop_Criteria        = NewRaw.is_SleepSpiral & NewRaw.diffSleepSpinNum == 0; % Looking for curls in sleep spirals (between areas where a spin is detected (diffSleepSpinNum==1))
-Loops                = table(yt_setones(Loop_Criteria),'VariableNames',{'Indices'});
-Loops.Duration_s     = (Loops.Indices(:,2)-Loops.Indices(:,1));
-Loops                = Loops(find(Loops.Duration_s~=0),:);
-
-NewRaw.standardloopxposition(:) = nan;
-NewRaw.standardloopyposition(:) = nan;
-NewRaw.standardloopzposition(:) = nan;
-
-for d = 1:height(Loops)
-    startix = Loops.Indices(d,1);
-    endix = Loops.Indices(d,2);
-    duration = (endix-startix)+1;
-    Loops.MostlySimpleSleepNum(d) = mode(NewRaw.Simple_Sleep_Num(startix:endix));
-    Loops.REM_seconds(d) = sum(NewRaw.is_REM(startix:endix));
-    Loops.REM_percentage(d) = sum(NewRaw.is_REM(startix:endix))/sum(NewRaw.is_sleep(startix:endix));
-    Loops.sleep(d) = sum(NewRaw.is_sleep(startix:endix));
-    Loops.mean_speed(d) = mean(NewRaw.speed(startix:endix));
-    Loops.diameter(d) = (Loops.mean_speed(d) * Loops.Duration_s(d))/pi;
-    NewRaw.LoopNum(startix:endix) = d;
-    NewRaw.LoopDur(startix:endix) = Loops.Duration_s(d);
-    NewRaw.LoopModeSleepCode(startix:endix) = Loops.MostlySimpleSleepNum(d);
-    NewRaw.standardloopxposition(startix:endix) = NewRaw.x(startix:endix)-NewRaw.x(startix);
-    NewRaw.standardloopyposition(startix:endix) = NewRaw.y(startix:endix)-NewRaw.y(startix);
-    NewRaw.standardloopzposition(startix:endix) = NewRaw.z(startix:endix)-NewRaw.z(startix) + d*20;
-end
-
-Loops_Only = NewRaw(find(~isnan(NewRaw.standardloopxposition)),:);
-Naps_Only = NewRaw(find(~isnan(NewRaw.standardsleepxposition)),:);
-Spirals_Only = NewRaw(find(~isnan(NewRaw.standardspiralxposition)),:);
-
-
-scatter3(NewRaw.standardloopxposition, NewRaw.standardloopyposition, NewRaw.standardloopzposition,...
-    [],NewRaw.Simple_Sleep_Num,'filled')
-
-writetable(Spirals,strcat(SealIDs(s),'_09_Spirals_Stats.csv'));
-writetable(Loops,strcat(SealIDs(s),'_09_Loops_Stats.csv'));
-writetable(Loops_Only,strcat(SealIDs(s),'_09_Hypnotrack_1Hz_All_Loops.csv'));
-writetable(Spirals_Only,strcat(SealIDs(s),'_09_Hypnotrack_1Hz_All_Sleep_Spirals.csv'));
-writetable(Naps_Only,strcat(SealIDs(s),'_09_Hypnotrack_1Hz_All_Naps.csv'));
 
 R_Spirals_Only = Spirals_Only(find(Spirals_Only.SleepSpiralTurns > 0),:); % FIND RIGHT SPIRALS
 L_Spirals_Only = Spirals_Only(find(Spirals_Only.SleepSpiralTurns < 0),:); % FIND RIGHT SPIRALS
