@@ -246,7 +246,6 @@ DataPath = 'G:\My Drive\Visualization\Data';
 cd(DataPath)
 NewRaw = readtable('04_Sleep-at-Sea_JKB_00_test33_HypoactiveHeidi_09_Hypnotrack_JKB_1Hz_AnimExcerpt.csv');
 NewRaw_10s = downsample(NewRaw,10);
-writetable(NewRaw_10s,'04_Sleep-at-Sea_JKB_00_test33_HypoactiveHeidi_09_Hypnotrack_JKB_10s_AnimExcerpt.csv');
 
 %%
 % Read in hypnotrack to play with

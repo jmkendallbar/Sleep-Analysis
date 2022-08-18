@@ -1,11 +1,9 @@
 %% Processing step 10
 
-%233 used to work? now not
 %% 00.A - READ IN RAW DIVE DATA, MAT FILE, AND STROKE DATA
 clear all
-%for k=8:8
-parfor k=1:621
-%parfor k=1:621
+%parfor k=1:418
+for k=1:1 %:418
     close all
     k
     % Data_path = 'C:\Users\fbar\Documents\Sleep_Analysis\Data'
@@ -39,7 +37,6 @@ parfor k=1:621
     haveStrokeData = ~isempty(SealID); 
     if ~isempty(SealID)
         disp('Stroke Data File'); haveSleepData = 0; haveDiveData = 1;
-        TAGID = 'stroke';
         Identifier = extractBefore(Raw_Files(k).name,'_stroke_raw_data.csv')
     else
         SealID = extractBefore(Raw_Files(k).name,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')
@@ -49,35 +46,19 @@ parfor k=1:621
             TOPPID = Raw_Files(k).name(1:7); 
             Identifier = extractBefore(Raw_Files(k).name,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')
             disp('Sleep Data File')
-            Seals_Used.TOPPID(k)=cellstr(TOPPID);
         elseif Raw_Files(k).name(end-18:end)
             TOPPID = Raw_Files(k).name(1:7); 
             haveDiveData = 1
             Identifier = extractBefore(Raw_Files(k).name,'_iknos_raw_data.csv')
             SEALID = extractAfter(Identifier,TOPPID)
             disp('Dive Data File')
-            Seals_Used.TOPPID(k)=cellstr(TOPPID);
         end
     end
+    Seals_Used.TOPPID(k)=cellstr(TOPPID);
     
     %% 00.A - LOAD DIVE DATA
     if haveDiveData & haveStrokeData==0
     % Load raw data; ignore header if has one
-        
-        TAGID_full = extractAfter(Identifier,strcat(TOPPID,'_'));
-        TAGID = extractBefore(TAGID_full,'_DAprep_full');
-        cd(Data_path);
-    
-        AF_Metadata = readtable('10_NES_AdultFemaleQC.xlsx');
-        Seals_Used.TDR1(k) = {'yes'};
-        % SKIP IF JKB Include criteria are not met (if QC TDR bad quality flag)
-        if AF_Metadata.JKB_Include(find(AF_Metadata.TOPPID==str2double(TOPPID)))==0 | contains(string(TAGID),string(AF_Metadata.TDR1ID(find(AF_Metadata.TOPPID==str2double(TOPPID)))))==0
-            Seals_Used.TDR1(k) = {'no'};
-            continue
-        end
-        
-        cd(RAW_path);
-        % Read in raw data - FIRST TRY
         fid= fopen (Raw_Files(k).name,'r');
         for i = 1:60
             mn=fgetl(fid);
@@ -97,15 +78,14 @@ parfor k=1:621
         NewRaw.difftime = [diff(NewRaw.time)*86400; median(diff(NewRaw.time)*86400)];
         Orig_SamplingInterval = round(median(NewRaw.difftime));
 
-        if sum(Orig_SamplingInterval == [1 4 8]) % if sampling interval is every 1, 4, or 8 sec
+        if sum(Orig_SamplingInterval == [1 4 8])
             NewRaw = downsample(NewRaw,8/Orig_SamplingInterval); % Changing resolution to 1 per 8 sec
-        elseif sum(Orig_SamplingInterval == [5 10]) % if sampling interval is every 5 or 10 sec
+        elseif sum(Orig_SamplingInterval == [5 10])
             NewRaw = downsample(NewRaw,10/Orig_SamplingInterval); % Changing resolution to 1 per 10 sec
         end
         
         NewRaw.difftime = [diff(NewRaw.time)*86400; median(diff(NewRaw.time)*86400)];
         SamplingInterval = round(median(NewRaw.difftime));
-        NewRaw.time = round(NewRaw.time * 86400)/86400; % ROUND TO NEAREST SEC
     end
 
     %% 00.B - LOAD SEAL SLEEP DATA
@@ -130,7 +110,7 @@ parfor k=1:621
         Identifier = extractBefore(Raw_Files(k).name,'_09_sleep_raw_data_Hypnotrack_JKB_1Hz.csv')
         Nickname = extractAfter(Identifier,'_')
         SEALID = extractBefore(Nickname,'_')
-        s = find(SealIDs==SealID); % FIND SEAL 
+        s = find(SealIDs==SealID); % PICK A SEAL 
 
         % Setup data types for metadata
         opts = detectImportOptions("01_Sleep_Study_Metadata.csv");
@@ -170,7 +150,6 @@ parfor k=1:621
             NewRaw = downsample(NewRaw,10/Orig_SamplingInterval); % Changing resolution to 1 per 10 sec
         end
 
-        NewRaw.time = round(NewRaw.time * 86400)/86400; % ROUND TO NEAREST SEC
         fs = 1/median(diff(NewRaw.Seconds)); % Updating samples per sec to 1
         % NewRaw.CorrectedDepth = round(2*NewRaw.Depth)/2; % ROUND TO NEAREST 0.5 m 
         NewRaw.CorrectedDepth = round(NewRaw.Depth); % ROUND TO NEAREST meter 
@@ -208,35 +187,14 @@ parfor k=1:621
         StrokeRaw = downsample(StrokeRaw,10/Orig_SamplingInterval);
         Stroke_SamplingInterval = round(86400*median(diff(StrokeRaw.time)));
 
-        cd(Data_path);
-        cd(RAW_path)
+        cd('G:\My Drive\Dissertation Sleep\Sleep_Analysis\Data\10_Raw iknos dive files NESE')
 
         RAWSTROKEKAMIfile=dir(['*_' num2str(SEALID) '*']);
-        TOPPID = RAWSTROKEKAMIfile(2).name(1:7);
+        TOPPID = RAWSTROKEKAMIfile(1).name(1:7);
 
-        MK10RAWfile=dir([TOPPID '*_iknos_raw_data.csv']);
+        MK10RAWfile=dir([num2str(TOPPID) '_iknos_raw_data.csv']);
 
-        if ~isempty(MK10RAWfile)
-            fid= fopen (MK10RAWfile(1).name,'r');
-            for i=1:60
-                mn=fgetl(fid);
-                if contains(mn,'Corrected')==1 
-                    p=i;
-                    continue
-                end
-            end
-
-            if p==1
-                NewRaw = readtable(MK10RAWfile(1).name);
-            else 
-                opts = detectImportOptions(MK10RAWfile(1).name,'NumHeaderLines',p-1);
-                NewRaw = readtable(MK10RAWfile(1).name,opts);
-            end
-        else
-            disp('No MK10 or RAW used for MAT file found')
-        end
-        
-        NewRaw.time = round(NewRaw.time * 86400)/86400; % ROUND TO NEAREST SEC
+        NewRaw = readtable(MK10RAWfile.name);
         SamplingInterval = round(median(diff(NewRaw.time))*86400);   
 
         cd(Data_path);
@@ -264,7 +222,6 @@ if haveStrokeData | haveDiveData
             SEALID = convertCharsToStrings(t.MetaData.FieldID);
             Seals_Used.SEALID(k)=convertCharsToStrings(t.MetaData.FieldID); %
             Seals_Used.TOPPID(k)={t.TOPPID}; % 
-            
             Seals_Used.FIELDID(k) = convertCharsToStrings(t.MetaData.FieldID);
             Seals_Used.Mortality_Probable(k) = isempty(t.MetaData.ArriveLoc);
             Seals_Used.Deployment_Type(k) = convertCharsToStrings(t.MetaData.DeploymentType);
@@ -281,7 +238,6 @@ if haveStrokeData | haveDiveData
             Seals_Used.Trip_End(k) = t.MetaData.ArriveDateTime;
             Seals_Used.Trip_Duration(k) = t.MetaData.ArriveDate-t.MetaData.DepartDate;   
             
-            Seals_Used.TAGID(k) = {TAGID};
 
             if t.MetaData.Group.CompleteTDR == 1 |  height(t.DiveType)>10
                 Seals_Used.Total_Transit(k) = sum(t.DiveType.DiveType(:)==0);
@@ -300,10 +256,10 @@ if haveStrokeData | haveDiveData
                 title(strcat('Depth Data for Single Dive #',int2str(dix),' for Seal: ',SEALID, ' TOPPID:',TOPPID))
             
                 if abs(NewRaw.CorrectedDepth(startix)) > 20 | abs(NewRaw.CorrectedDepth(endix)) > 20
-                    if (~contains(TAGID,t.MetaData.TDRused.DiveTagID) | (convertCharsToStrings(t.MetaData.TDRused.DiveTagType) ~= 'Mk9' &  convertCharsToStrings(t.MetaData.TDRused.DiveTagType) ~= 'CTD'))
+                    if contains(Identifier,t.MetaData.TDRused.Dive2TagID) | (convertCharsToStrings(t.MetaData.TDRused.DiveTagType) ~= 'Mk9' &  convertCharsToStrings(t.MetaData.TDRused.DiveTagType) ~= 'CTD')
                         
                         cd(Data_path)
-                        cd(RAW_path)
+                        cd('10_Raw iknos dive files NESE')
                         
                         if ~isempty(t.MetaData.TDRused.DiveTagID)
                             OtherTDRfile = dir([num2str(TOPPID) '*' t.MetaData.TDRused.DiveTagID '*raw_data.csv']);
@@ -342,7 +298,6 @@ if haveStrokeData | haveDiveData
                     disp('Diving data aligned with MAT file.')
                     Seals_Used.Dive_data_aligned_with_MAT_file(k) = 1;
                 end
-                NewRaw.time = round(NewRaw.time * 86400)/86400; % ROUND TO NEAREST SEC
                 NewRaw = NewRaw(find(NewRaw.time >= t.MetaData.DepartDate & NewRaw.time <t.MetaData.ArriveDate),:);
                 
                 [Year, Month, Day, Hour, Min, Sec] = datevec(t.MetaData.ArriveDateTime);
@@ -360,15 +315,6 @@ if haveStrokeData | haveDiveData
             cd('10_Adult_Female_Tracks') %go to track csv directory
             CorrTrackfile = dir([num2str(TOPPID) '*foieGras_crw.csv']);
             haveCorrTrack = ~isempty(CorrTrackfile);
-            
-            % Check for wrong year (problem in some zoc files)
-            if abs(t.MetaData.DepartDate-NewRaw.time(1)) >= 300
-                timeadd = (NewRaw.time-t.MetaData.DepartDate)>=365;
-                timesub = (NewRaw.time-t.MetaData.DepartDate)<=-365;
-                timecorr = timeadd - timesub;
-                NewRaw.time = NewRaw.time - timecorr*365;
-                figure; plot(NewRaw.time); datetick('y','mmm yy')
-            end
 
             if haveCorrTrack & height(t.Track_Best)==0
                 
@@ -377,21 +323,18 @@ if haveStrokeData | haveDiveData
                 CorrTrack.closest_JulDate = knnsearch(NewRaw.time,CorrTrack.DN);
                 CorrTrack.raw_JulDate = NewRaw.time(CorrTrack.closest_JulDate);
                 TLL = table(CorrTrack.lat, CorrTrack.lon, CorrTrack.raw_JulDate, 'VariableNames', {'Lat','Long','time'});
-                TLL.time = round(TLL.time * 86400)/86400;
                 NewRaw = outerjoin(NewRaw,TLL,'Keys','time','MergeKeys',true);
                 NewRaw.Lat = fixgaps(NewRaw.Lat); NewRaw.Long = fixgaps(NewRaw.Long); 
                 
             elseif height(t.Track_Best)>0
                   
                 % Align and upsample track to fit NewRaw dataset
-                t.Track_Best.closest_JulDate = knnsearch(NewRaw.time,t.Track_Best.JulDate); % Track best has time every hour
+                t.Track_Best.closest_JulDate = knnsearch(NewRaw.time,t.Track_Best.JulDate);
                 t.Track_Best.raw_JulDate = NewRaw.time(t.Track_Best.closest_JulDate);
-                TLL = table(t.Track_Best.Lat, t.Track_Best.Lon, t.Track_Best.raw_JulDate, 'VariableNames', {'Lat','Long','time'});
-                TLL.time = round(TLL.time * 86400)/86400;
+                TLL = table(t.Track_Best.Lat, t.Track_Best.Long, t.Track_Best.raw_JulDate, 'VariableNames', {'Lat','Long','time'});
                 NewRaw = outerjoin(NewRaw,TLL,'Keys','time','MergeKeys',true);
                 NewRaw.Lat = fixgaps(NewRaw.Lat); NewRaw.Long = fixgaps(NewRaw.Long); 
 
-                
             else
                 Seals_Used.HaveTrackBest(k)=0; %
                 NewRaw.Lat(:) = nan;
@@ -598,8 +541,8 @@ if haveStrokeData | haveDiveData
     if haveStrokeData
         
         difftime = [diff(NewRaw.time)*86400; 0];
-        jumps = difftime(find(difftime - mean(difftime) >360));
-        maxdiffix = find((difftime - mean(difftime)) >360);
+        jumps = difftime(find(difftime - mean(difftime) >10));
+        maxdiffix = find((difftime - mean(difftime)) >10);
         jumpbegin = maxdiffix(find((maxdiffix-1) < (height(NewRaw)-maxdiffix))) % JUMPS NEAR BEGINNING
         jumpend = maxdiffix(find((maxdiffix-1) > (height(NewRaw)-maxdiffix))) % JUMPS AT END
         if ~isempty(jumpbegin) & ~isempty(jumpend)
@@ -614,12 +557,6 @@ if haveStrokeData | haveDiveData
         else
             disp('No long time jumps')
         end 
-
-        if height(NewRaw)<100000
-            disp('NewRaw shorter than 100,000 rows after crop, file skipped.')
-            continue
-        end
-
     end
         
     %% 01.C - ALIGN DATA
@@ -736,11 +673,7 @@ if haveStrokeData | haveDiveData
             NewRaw.Stroke_Rate = fixgaps(NewRaw.Stroke_Rate); NewRaw.Depth = fixgaps(NewRaw.Depth); % Interpolate gaps of nans from timestamps with no nearest neighbor
                 
             %% Finescale Alignment
-            if height(NewRaw)>100000
-                [NewRaw_aligned StrokeRaw_aligned, D] = alignsignals(NewRaw.CorrectedDepth(50000:100000),NewRaw.Depth(50000:100000));
-            else
-                [NewRaw_aligned StrokeRaw_aligned, D] = alignsignals(NewRaw.CorrectedDepth(round(height(NewRaw))/4:round(height(NewRaw)/3)),NewRaw.Depth(round(height(NewRaw)/4):round(height(NewRaw)/3)));
-            end
+            [NewRaw_aligned StrokeRaw_aligned, D] = alignsignals(NewRaw.CorrectedDepth(50000:100000),NewRaw.Depth(50000:100000));
             
             figure
             plot(NewRaw_aligned); hold on; plot(StrokeRaw_aligned)
@@ -791,17 +724,17 @@ if haveStrokeData | haveDiveData
     end
 
     difftime = [diff(NewRaw.time)*86400; 0];
-    jumps = difftime(find(difftime - mean(difftime) >0));
+    jumps = difftime(find(difftime - mean(difftime) >10));
     longjumps = maxk(jumps,10);
 
-%     if max(longjumps) < (8 * 3600) % if gap in data is less than 8 hrs
-%         Newtimes = [NewRaw.time(1) : SamplingInterval/86400 : NewRaw.time(height(NewRaw))];
-%         Newtimes = round(Newtimes * 86400)/86400;
-%         NewRaw.time = round(NewRaw.time* 86400 ) / 86400;
-%         NewRaw2 = table(Newtimes.','VariableNames',{'time'});
-%         NewRaw3 = outerjoin(NewRaw,NewRaw2,'Keys','time','MergeKeys',true);
-%         NewRaw.CorrectedDepth(:) = fixgaps(NewRaw.CorrectedDepth);
-%     end
+    if max(longjumps) < (8 * 3600) % if gap in data is less than 8 hrs
+        Newtimes = [NewRaw.time(1) : SamplingInterval/86400 : NewRaw.time(height(NewRaw))];
+        Newtimes = round(Newtimes * 86400)/86400;
+        NewRaw.time = round(NewRaw.time* 86400 ) / 86400;
+        NewRaw2 = table(Newtimes.','VariableNames',{'time'});
+        NewRaw = outerjoin(NewRaw,NewRaw2,'Keys','time','mergekeys',true);
+        NewRaw.CorrectedDepth(:) = fixgaps(NewRaw.CorrectedDepth);
+    end
 
     haveStrokes = sum(strcmp('Stroke_Rate',NewRaw.Properties.VariableNames));
     haveSleep = sum(strcmp('Simple_Sleep_Num',NewRaw.Properties.VariableNames));

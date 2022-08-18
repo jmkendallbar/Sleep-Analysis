@@ -2,8 +2,8 @@ clear all
 
 %for k=381:406 % 406 total
 %%
-%for k=8:8
-parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
+%for k=1:1
+parfor k=163:406
     %% 00.A Load Data & Metadata
     close all
     
