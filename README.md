@@ -1,2 +1,2 @@
 # Sleep-Analysis
-Analysis for my dissertation research on sleep in seals.
+Code and data for in-prep manuscripts.
