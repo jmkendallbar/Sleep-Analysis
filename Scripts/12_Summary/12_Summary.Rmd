@@ -29,14 +29,18 @@ calculate_mode <- function(x) {
 }
 ```
 
-## Compiling Restimates Model Output Files
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Compiling Restimates Model Output File
 
 ```{r Restimates_Output-to-Summary}
-Restimates_Filenames <- dir(here("Data","11_Restimates_Parallel/"))
+rm(Daily)
+rm(Dives)
+rm(SealsUsed)
+rm(Daily_ALL)
+rm(Dives_ALL)
+rm(SealsUsed_ALL)
+
+SleepEstimatesFolder <- "11_Sleep-Estimates_Output/"
+Restimates_Filenames <- dir(here("Data",SleepEstimatesFolder))
 
 Restimates_split <- do.call(rbind, strsplit(Restimates_Filenames, "_"))[, 1:2]
 Restimates_Files <- data.frame(cbind(Restimates_Filenames, Restimates_split))
@@ -47,90 +51,79 @@ TOPPIDs <- unique(Restimates_Files$TOPPID)
 
 Restimates_Files$Dive_files <- str_extract(Restimates_Files$Filename, ".*Daily_Activity.csv")
 
-Daily_Files <- dir(here("Data","11_Restimates_Parallel/"),pattern=".*Daily_Activity.csv")
-Dives_Files <- dir(here("Data","11_Restimates_Parallel/"),pattern=".*Dives.csv")
+Daily_Files <- dir(here("Data",SleepEstimatesFolder),pattern=".*Daily_Activity.csv")
+Dives_Files <- dir(here("Data",SleepEstimatesFolder),pattern=".*Dives.csv")
 
-Restimates_Metadata <- read_csv(here("Data","11_Sleep_Model_Summary.csv"),na='NaN')
+# Restimates_Metadata <- read_csv(here("Data","11_Sleep_Model_Summary.csv"),na='NaN')
+Restimates_Metadata <- read_csv(here("Data","10_NES_AdultFemaleQC.csv"),na = c("NA","NaN", " "))
+
 Restimates_Metadata <- Restimates_Metadata %>% drop_na(TOPPID)
 
-# Issue with 288 - have a track but no Dives.csv file
-for (i in 1:100) { 
-  Dives <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
-  Daily <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
-  SealsUsed <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Seals_Used.csv",sep=""),na='NaN')
+#
+for (i in 1:391) { 
   
+  if (file.exists(paste(here("Data",SleepEstimatesFolder),"/",FileIDs[i],"_Dives.csv",sep=""))){
+    Dives <- read_csv(paste(here("Data",SleepEstimatesFolder),"/",FileIDs[i],"_Dives.csv",sep=""),
+                      na='NaN', show_col_types = FALSE)
+    Daily <- read_csv(paste(here("Data",SleepEstimatesFolder),"/",FileIDs[i],"_Daily_Activity.csv",sep=""),
+                      na='NaN', show_col_types = FALSE)
+    SealsUsed <- read_csv(paste(here("Data",SleepEstimatesFolder),"/",FileIDs[i],"_Seals_Used.csv",sep=""),
+                          na='NaN', show_col_types = FALSE)
+
+    Daily$Percent_of_Trip <- round(100*(Daily$Days_Elapsed / max(Daily$Days_Elapsed)))
+    
+    Dives <- Dives %>% 
+      mutate(across(everything(), as.character))
+    Daily <- Daily %>% 
+      drop_na(Days_Elapsed) %>% 
+      mutate(across(everything(), as.character))
+    SealsUsed <- SealsUsed %>% 
+      drop_na(TOPPID) %>% 
+      mutate(across(everything(), as.character)) %>% 
+      mutate(as.numeric(TOPPID))
+    
+    if (SealsUsed$Season[1] == 1 | (SealsUsed$Trip_Duration[1] < 150 & SealsUsed$Trip_Duration[1] > 50)){
+      Dives$Season_Code = "PB"
+      Daily$Season_Code = "PB"
+      SealsUsed$Season_Code = "PB"
+    }else if (SealsUsed$Season[1] == 2 | SealsUsed$Trip_Duration[1] > 150){
+      Dives$Season_Code = "PM"
+      Daily$Season_Code = "PM"
+      SealsUsed$Season_Code = "PM"
+    }else {
+      Dives$Season_Code = "other"
+      Daily$Season_Code = "other"
+      SealsUsed$Season_Code = "other"
+    }
   
-  Daily <- Daily %>% drop_na(Days_Elapsed)
-  SealsUsed <- SealsUsed %>% drop_na(SEALID)
-  Daily$Percent_of_Trip <- round(100*(Daily$Days_Elapsed / max(Daily$Days_Elapsed)))
-  
-  if (SealsUsed$Season[1] == 1 | (SealsUsed$Trip_Duration[1] < 150 & SealsUsed$Trip_Duration[1] > 50)){
-    Dives$Season_Code = "PB"
-    Daily$Season_Code = "PB"
-    SealsUsed$Season_Code = "PB"
-  }else if (SealsUsed$Season[1] == 2 | SealsUsed$Trip_Duration[1] > 150){
-    Dives$Season_Code = "PM"
-    Daily$Season_Code = "PM"
-    SealsUsed$Season_Code = "PM"
-  }else {
-    Dives$Season_Code = "other"
-    Daily$Season_Code = "other"
-    SealsUsed$Season_Code = "other"
-  }
-  
-  Model_good <- Restimates_Metadata$Model_Quality[Restimates_Metadata$TOPPID==SealsUsed$TOPPID[1]]
-  if (i==1 & Model_good){
-    # ONLY RUN FOR FIRST ANIMAL
-    Dives_ALL     <- Dives
-    Daily_ALL     <- Daily
-    SealsUsed_ALL <- SealsUsed
-  }
-  if (i>1 & Model_good){
-    #RUN FOR SUBSEQUENT ANIMALS
-    Dives_ALL <- rbind.fill(Dives_ALL, Dives)
-    Daily_ALL <- rbind.fill(Daily_ALL, Daily)
-    SealsUsed_ALL <- rbind.fill(SealsUsed_ALL, SealsUsed)
+    QC <- Restimates_Metadata$`JKB QC`[Restimates_Metadata$TOPPID==SealsUsed$TOPPID[1]]
+    if (is_empty(QC)){
+      Model_good <- 0
+    }else if(is.na(QC)) {
+      Model_good <- 0
+    }else if(QC > 0.45){
+      Model_good <-  1
+    }else {
+      Model_good <-  0
+    }
+    if (i==1 & Model_good){
+      # ONLY RUN FOR FIRST ANIMAL
+      Dives_ALL     <- Dives
+      Daily_ALL     <- Daily
+      SealsUsed_ALL <- SealsUsed
+    }
+    if (i>1 & Model_good){
+      #RUN FOR SUBSEQUENT ANIMALS
+      Dives_ALL <- dplyr::bind_rows(Dives_ALL, Dives)
+      Daily_ALL <- dplyr::bind_rows(Daily_ALL, Daily)
+      SealsUsed_ALL <- dplyr::bind_rows(SealsUsed_ALL, SealsUsed)
+    }
+    }else{
+    next
   }
 }
 
-for (i in 101: length(FileIDs)-4) { # All except sleep data and Images folder
-  Dives <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
-  Daily <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
-  SealsUsed <- read_csv(paste(here("Data","11_Restimates_Parallel/"),"/",FileIDs[i],"_Seals_Used.csv",sep=""))
-  
-  
-  Daily <- Daily %>% drop_na(Days_Elapsed)
-  SealsUsed <- SealsUsed %>% drop_na(SEALID)
-  Daily$Percent_of_Trip <- round(100*(Daily$Days_Elapsed / max(Daily$Days_Elapsed)))
-  
-  if (SealsUsed$Season[1] == 1 | (SealsUsed$Trip_Duration[1] < 150 & SealsUsed$Trip_Duration[1] > 50)){
-    Dives$Season_Code = "PB"
-    Daily$Season_Code = "PB"
-    SealsUsed$Season_Code = "PB"
-  }else if (SealsUsed$Season[1] == 2 | SealsUsed$Trip_Duration[1] > 150){
-    Dives$Season_Code = "PM"
-    Daily$Season_Code = "PM"
-    SealsUsed$Season_Code = "PM"
-  }else {
-    Dives$Season_Code = "other"
-    Daily$Season_Code = "other"
-    SealsUsed$Season_Code = "other"
-  }
-  
-  Model_good <- Restimates_Metadata$Model_Quality[Restimates_Metadata$TOPPID==SealsUsed$TOPPID[1]]
-  if (i==1 & Model_good){
-    # ONLY RUN FOR FIRST ANIMAL
-    Dives_ALL     <- Dives
-    Daily_ALL     <- Daily
-    SealsUsed_ALL <- SealsUsed
-  }
-  if (i>1 & Model_good){
-    #RUN FOR SUBSEQUENT ANIMALS
-    Dives_ALL <- rbind.fill(Dives_ALL, Dives)
-    Daily_ALL <- rbind.fill(Daily_ALL, Daily)
-    SealsUsed_ALL <- rbind.fill(SealsUsed_ALL, SealsUsed)
-  }
-}
+
 
 # OMIT NANs before writing CSVs
 
@@ -139,108 +132,7 @@ write.csv(Daily_ALL,here("Data","11_Restimates_ALL_DailyActivity.csv"),row.names
 write.csv(SealsUsed_ALL,here("Data","11_Restimates_ALL_SealsUsed.csv"),row.names = FALSE)
 ```
 
-```{r Restimates_Track_output}
-Restimates_Filenames <- dir(here("Data","11_Restimates_Parallel"))
 
-Restimates_split <- do.call(rbind, strsplit(Restimates_Filenames, "_"))[, 1:2]
-Restimates_Files <- data.frame(cbind(Restimates_Filenames, Restimates_split))
-colnames(Restimates_Files) <- c('Filename','TOPPID','SealID')
-Restimates_Files$FileID <- paste(Restimates_Files$TOPPID,"_",Restimates_Files$SealID,sep="")
-FileIDs <- unique(Restimates_Files$FileID)
-TOPPIDs <- unique(Restimates_Files$TOPPID)
-
-Restimates_Files$Dive_files <- str_extract(Restimates_Files$Filename, ".*Daily_Activity.csv")
-
-Daily_Files <- dir("Data/11_Restimates_Parallel",pattern=".*Daily_Activity.csv")
-Dives_Files <- dir("Data/11_Restimates_Parallel",pattern=".*Dives.csv")
-
-Restimates_Metadata <- read_csv("Data/11_Sleep_Model_Summary.csv",na='NaN')
-Restimates_Metadata <- Restimates_Metadata %>% drop_na(TOPPID)
-
-for (i in 1:100) { 
-  Dives <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
-  Daily <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
-  SealsUsed <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Seals_Used.csv",sep=""))
-  
-  
-  Daily <- Daily %>% drop_na(Days_Elapsed)
-  SealsUsed <- SealsUsed %>% drop_na(SEALID)
-  Daily$Percent_of_Trip <- round(100*(Daily$Days_Elapsed / max(Daily$Days_Elapsed)))
-  
-  if (SealsUsed$Season[1] == 1 | (SealsUsed$Trip_Duration[1] < 150 & SealsUsed$Trip_Duration[1] > 50)){
-    Dives$Season_Code = "PB"
-    Daily$Season_Code = "PB"
-    SealsUsed$Season_Code = "PB"
-  }else if (SealsUsed$Season[1] == 2 | SealsUsed$Trip_Duration[1] > 150){
-    Dives$Season_Code = "PM"
-    Daily$Season_Code = "PM"
-    SealsUsed$Season_Code = "PM"
-  }else {
-    Dives$Season_Code = "other"
-    Daily$Season_Code = "other"
-    SealsUsed$Season_Code = "other"
-  }
-  
-  Track_good <- Restimates_Metadata$Track_Quality[Restimates_Metadata$TOPPID==SealsUsed$TOPPID[1]]
-  if (i==1 & Track_good){
-    # ONLY RUN FOR FIRST ANIMAL
-    Dives_ALL     <- Dives
-    Daily_ALL     <- Daily
-    SealsUsed_ALL <- SealsUsed
-  }
-  if (i>1 & Track_good){
-    #RUN FOR SUBSEQUENT ANIMALS
-    Dives_ALL <- rbind.fill(Dives_ALL, Dives)
-    Daily_ALL <- rbind.fill(Daily_ALL, Daily)
-    SealsUsed_ALL <- rbind.fill(SealsUsed_ALL, SealsUsed)
-  }
-}
-
-for (i in 101: length(FileIDs)-4) { # All except sleep data and Images folder
-  Dives <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Dives.csv",sep=""),na='NaN')
-  Daily <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Daily_Activity.csv",sep=""),na='NaN')
-  SealsUsed <- read_csv(paste("Data/11_Restimates_Parallel/",FileIDs[i],"_Seals_Used.csv",sep=""))
-  
-  
-  Daily <- Daily %>% drop_na(Days_Elapsed)
-  SealsUsed <- SealsUsed %>% drop_na(SEALID)
-  Daily$Percent_of_Trip <- round(100*(Daily$Days_Elapsed / max(Daily$Days_Elapsed)))
-  
-  if (SealsUsed$Season[1] == 1 | (SealsUsed$Trip_Duration[1] < 150 & SealsUsed$Trip_Duration[1] > 50)){
-    Dives$Season_Code = "PB"
-    Daily$Season_Code = "PB"
-    SealsUsed$Season_Code = "PB"
-  }else if (SealsUsed$Season[1] == 2 | SealsUsed$Trip_Duration[1] > 150){
-    Dives$Season_Code = "PM"
-    Daily$Season_Code = "PM"
-    SealsUsed$Season_Code = "PM"
-  }else {
-    Dives$Season_Code = "other"
-    Daily$Season_Code = "other"
-    SealsUsed$Season_Code = "other"
-  }
-  
-  Model_good <- Restimates_Metadata$Model_Quality[Restimates_Metadata$TOPPID==SealsUsed$TOPPID[1]]
-  if (i==1 & Model_good){
-    # ONLY RUN FOR FIRST ANIMAL
-    Dives_ALL     <- Dives
-    Daily_ALL     <- Daily
-    SealsUsed_ALL <- SealsUsed
-  }
-  if (i>1 & Model_good){
-    #RUN FOR SUBSEQUENT ANIMALS
-    Dives_ALL <- rbind.fill(Dives_ALL, Dives)
-    Daily_ALL <- rbind.fill(Daily_ALL, Daily)
-    SealsUsed_ALL <- rbind.fill(SealsUsed_ALL, SealsUsed)
-  }
-}
-
-# OMIT NANs before writing CSVs
-
-write.csv(Dives_ALL,"Data/11_Restimates_GoodTracks_Dives.csv",row.names = FALSE)
-write.csv(Daily_ALL,"Data/11_Restimates_GoodTracks_DailyActivity.csv",row.names = FALSE)
-write.csv(SealsUsed_ALL,"Data/11_Restimates_GoodTracks_SealsUsed.csv",row.names = FALSE)
-```
 
 ## Summarizing Restimates Model Output
 
@@ -253,6 +145,9 @@ Dives_ALL <- read_csv(here("Data","11_Restimates_ALL_Dives.csv"))
 Daily_ALL <- read_csv(here("Data","11_Restimates_ALL_DailyActivity.csv"))
 SealsUsed_ALL <- read_csv(here("Data","11_Restimates_ALL_SealsUsed.csv"))
 
+# Restimates_Metadata <- read_csv(here("Data","11_Sleep_Model_Summary.csv"),na='NaN')
+Restimates_Metadata <- read_csv(here("Data","10_NES_AdultFemaleQC.csv"),na = c("NA","NaN", " "))
+Restimates_Metadata <- Restimates_Metadata %>% drop_na(TOPPID)
 # Make summary table ----
 
 # Simplify seals used summary table
@@ -264,6 +159,7 @@ Summary_Table <- SealsUsed_ALL %>%
 # deployments were done (used later in line 168).
 
 Daily_Budgets_ALL <- Daily_ALL %>% 
+  filter(daily_recording > 23.9 & daily_recording <24.1) %>% 
   group_by(TOPPID) %>% 
   dplyr::mutate(triprecord_days = max(Days_Elapsed)) %>% 
   group_by(SEALID,Season_Code) %>% 
@@ -431,6 +327,43 @@ ggsave(here("Figures","11_Daily_Activity_Budget_stackedareaplot.pdf"),stacked_ar
 
 ## Summarizing Restimates Sleep Analysis
 
+```{r Plotting nap maps}
+# Restimates_Metadata <- read_csv(here("Data","11_Sleep_Model_Summary.csv"),na='NaN')
+Restimates_Metadata <- read_csv(here("Data","10_NES_AdultFemaleQC.csv"),na = c("NA","NaN", " "))
+Restimates_Metadata <- Restimates_Metadata %>% drop_na(TOPPID)
+
+Goodtrack_metadata <- Restimates_Metadata %>% 
+  filter(`JKB QC`>0.75)
+
+Daily_ALL_goodtracks <- Daily_ALL[Daily_ALL$TOPPID %in% Goodtrack_metadata$TOPPID,]
+
+Daily_ALL_clean <- Daily_ALL_goodtracks %>% 
+  drop_na(Lat)
+Daily_sf <- st_as_sf(Daily_ALL_clean, coords = c("Lon360", "Lat"),  crs = 4326)
+Daily_sf = st_shift_longitude(Daily_sf)
+mapview(Daily_sf, map.types = "Stamen.Watercolor") 
+
+Daily_ALL_goodtracks2 <- Daily_ALL_goodtracks %>% 
+  filter(daily_recording == 24)
+
+tracks = Daily_sf %>% group_by(TOPPID) %>% 
+    summarise(do_union=FALSE) %>% st_cast("LINESTRING")
+
+
+ggplot() + geom_sf(data=Daily_sf,aes(col=TOPPID)) 
+
+
+ggplot() + geom_sf(data=tracks,aes(col=TOPPID))
+
+write.csv(Daily_ALL_goodtracks,here("Data","11_Restimates_ALL_DailyActivity_ALL_goodtracks.csv"),row.names = FALSE)
+
+
+NewRaw_SLEEP_downsample <- NewRaw_SLEEP %>% 
+  slice(floor(seq(1, nrow(.), length.out = 10000)))
+NewRaw_sf <- st_as_sf(NewRaw_SLEEP, coords = c("Long", "Lat"),  crs = 4326)
+mapview(NewRaw_sf, map.types = "Stamen.Watercolor") 
+```
+
 ```{r Read in Data}
 ## * Read in Sleep Stats alone ----
 
@@ -552,7 +485,8 @@ mapview(Naps_sf, map.types = "Stamen.Watercolor")
 
 NewRaw_SLEEP_downsample <- NewRaw_SLEEP %>% 
   slice(floor(seq(1, nrow(.), length.out = 10000)))
-NewRaw_SLEEP_downsample <- downSample(NewRaw_SLEEP,5)
+NewRaw_sf <- st_as_sf(NewRaw_SLEEP, coords = c("Long", "Lat"),  crs = 4326)
+mapview(NewRaw_sf, map.types = "Stamen.Watercolor") 
 
 
 # SPATIAL DATA ----

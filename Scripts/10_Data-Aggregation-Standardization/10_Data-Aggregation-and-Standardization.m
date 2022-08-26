@@ -3,7 +3,7 @@
 %233 used to work? now not
 %% 00.A - READ IN RAW DIVE DATA, MAT FILE, AND STROKE DATA
 clear all
-%for k=8:8
+%for k=2:2
 parfor k=1:621
 %parfor k=1:621
     close all
@@ -386,10 +386,11 @@ if haveStrokeData | haveDiveData
                 % Align and upsample track to fit NewRaw dataset
                 t.Track_Best.closest_JulDate = knnsearch(NewRaw.time,t.Track_Best.JulDate); % Track best has time every hour
                 t.Track_Best.raw_JulDate = NewRaw.time(t.Track_Best.closest_JulDate);
-                TLL = table(t.Track_Best.Lat, t.Track_Best.Lon, t.Track_Best.raw_JulDate, 'VariableNames', {'Lat','Long','time'});
+                TLL = table(t.Track_Best.Lat, t.Track_Best.Lon, t.Track_Best.Lon360, t.Track_Best.raw_JulDate, 'VariableNames', {'Lat','Long','Lon360','time'});
                 TLL.time = round(TLL.time * 86400)/86400;
+                
                 NewRaw = outerjoin(NewRaw,TLL,'Keys','time','MergeKeys',true);
-                NewRaw.Lat = fixgaps(NewRaw.Lat); NewRaw.Long = fixgaps(NewRaw.Long); 
+                NewRaw.Lat = fixgaps(NewRaw.Lat); NewRaw.Long = fixgaps(NewRaw.Long); NewRaw.Lon360 = fixgaps(NewRaw.Lon360)
 
                 
             else
@@ -553,7 +554,7 @@ if haveStrokeData | haveDiveData
         end
 
         % Filter out shallow dives (to use for alignment in next step).
-        Deep_Dives = Maybe_Dives(find(Maybe_Dives.Max_depth>100),:);
+        Deep_Dives = Maybe_Dives(find(Maybe_Dives.Max_depth>500),:);
 
         % For each potential SI, find stats. 
         for d= 1:height(Maybe_SIs)
@@ -646,19 +647,22 @@ if haveStrokeData | haveDiveData
                 Maybe_mk10_Dives.Time_max_depth(d)  = nan;
             end
         end
-        Deep_mk10_Dives = Maybe_mk10_Dives(find(Maybe_mk10_Dives.Max_depth>100),:);
+        Deep_mk10_Dives = Maybe_mk10_Dives(find(Maybe_mk10_Dives.Max_depth>500),:);
 
         Deep_Dives.rounded_Max_depth        = round(Deep_Dives.Max_depth/50)*50;
         Deep_mk10_Dives.rounded_Max_depth   = round(Deep_mk10_Dives.Max_depth/50)*50;
 
-        ndives_stroke = round((3/4)*height(Deep_Dives)); % was 40
-        ndives_mk10 = round((3/4)*height(Deep_mk10_Dives)); % was 40
-
+        ndives_stroke = round((1/10)*height(Deep_Dives)); 
+        
         % Find deepest dive within first 50 dives
+        % Find deepest dive within first 50 dives
+        Amax2 = maxk(Deep_Dives.Max_depth(1:ndives_stroke),2);
+        Bmax2 = maxk(Deep_mk10_Dives.Max_depth(1:ndives_stroke),2);
+
         Amax = max(Deep_Dives.Max_depth(1:ndives_stroke));
-        Bmax = max(Deep_mk10_Dives.Max_depth(1:ndives_mk10));
-        Time_Amax = Deep_Dives.Time_max_depth(find(Deep_Dives.Max_depth(1:ndives_stroke) == Amax));
-        Time_Bmax = Deep_mk10_Dives.Time_max_depth(find(Deep_mk10_Dives.Max_depth(1:ndives_mk10) == Bmax));
+        Bmax = max(Deep_mk10_Dives.Max_depth(1:ndives_stroke));
+        Time_Amax = Deep_Dives.Time_max_depth(find(Deep_Dives.Max_depth(1:ndives_stroke) == Amax2(1)));
+        Time_Bmax = Deep_mk10_Dives.Time_max_depth(find(Deep_mk10_Dives.Max_depth(1:ndives_stroke) == Bmax2(1)));
         Offset = Time_Amax - Time_Bmax
 
         figure

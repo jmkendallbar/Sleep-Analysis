@@ -2,8 +2,9 @@ clear all
 
 %for k=381:406 % 406 total
 %%
-%for k=8:8
-parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
+%for k=392:392
+parfor k=201:408 %201:408 %394:408
+%parfor k=301:406 % 1 to 200 done 8/17/2022 must go to 406
     %% 00.A Load Data & Metadata
     close all
     
@@ -67,6 +68,11 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     haveKami = sum(strcmp('KAMI',NewRaw.Properties.VariableNames));
     haveLatLong = sum(strcmp('Lat',NewRaw.Properties.VariableNames));
     haveLight = sum(strcmp('alight',NewRaw.Properties.VariableNames));
+
+    haveLon360 = sum(strcmp('Lon360',NewRaw.Properties.VariableNames));
+    if haveLatLong & haveLon360==0
+        NewRaw.Lon360 = wrapTo360(NewRaw.Long);
+    end
     
     % Get sampling resolution
     NewRaw.sampleround = [0; round(abs(diff(NewRaw.CorrectedDepth))*100)/100];
@@ -126,6 +132,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     if height(Dives)<10
         disp('Issue with Dive ID')
         Seals_Used.Dive_ID_Issue(k) = 1;
+        writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
         continue
     else
         Seals_Used.Dive_ID_Issue(k) = 0;
@@ -138,7 +145,8 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     Dives.Start_Light       = NewRaw.light(Dives.Indices(:,1));
     Dives.End_Light         = NewRaw.light(Dives.Indices(:,2));
     Dives.Lat               = NewRaw.Lat(Dives.Indices(:,1));
-    Dives.Long              = NewRaw.Long(Dives.Indices(:,2));
+    Dives.Long              = NewRaw.Long(Dives.Indices(:,1));
+    Dives.Lon360            = NewRaw.Lon360(Dives.Indices(:,1));
     disp('01.A Complete: Dives located successfully')
 
     %% 01.B - FIND DRIFTS, assess smoothing necessary
@@ -180,6 +188,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
         disp('Reasonable number of long drifts detected') 
     else
         disp('Suspiciously low number of long drifts detected')
+        writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
         continue
 %         
 %         while height(Drifts_long_test) < reasonable_long_drift_num_threshold
@@ -251,8 +260,9 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
                                 sign(NewRaw.FirstDeriv) == sign(NewRaw.FirstDeriv_next);
     Descents                = table(yt_setones(NewRaw.is_descent),'VariableNames',{'Indices'});
     if height(Descents) == 0
-        continue
         Seals_Used.Issue_with_Diving_Data(k) = 1;
+        writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
+        continue
     end
     Seals_Used.Issue_with_Diving_Data(k) = 0;
     Descents.Duration_s     = (Descents.Indices(:,2)-Descents.Indices(:,1))*SamplingInterval;
@@ -286,7 +296,8 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     SIs.Start_Light       = NewRaw.light(SIs.Indices(:,1));
     SIs.End_Light         = NewRaw.light(SIs.Indices(:,2));
     SIs.Lat                 = NewRaw.Lat(SIs.Indices(:,1));
-    SIs.Long                = NewRaw.Long(SIs.Indices(:,2));
+    SIs.Long                = NewRaw.Long(SIs.Indices(:,1));
+    SIs.Lon360  = NewRaw.Lon360(SIs.Indices(:,1));  
     SIs.JulDay = floor(SIs.Start_JulDate);
     SIs.Time_of_day_h = 24*(SIs.Start_JulDate - SIs.JulDay);
     SIs.Days_Elapsed = SIs.JulDay-SIs.JulDay(1); 
@@ -332,7 +343,8 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
         Naps.Start_JulDate  = NewRaw.time(Naps.Indices(:,1));
         Naps.End_JulDate    = NewRaw.time(Naps.Indices(:,2));
         Naps.Lat            = NewRaw.Lat(Naps.Indices(:,1));
-        Naps.Long           = NewRaw.Long(Naps.Indices(:,2));
+        Naps.Long           = NewRaw.Long(Naps.Indices(:,1));
+        Naps.Lon360         = NewRaw.Lon360(Naps.Indices(:,1));
         Naps.DriftRate      = (Naps.Start_Depth - Naps.End_Depth) ./ Naps.Duration_s;
         Naps.JulDay         = floor(Naps.Start_JulDate);
         Naps.Time_of_day_h = 24*(Naps.Start_JulDate - Naps.JulDay);
@@ -437,6 +449,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
         end
         Drifts_long.Lat(d) = mean(NewRaw.Lat(startix:endix));
         Drifts_long.Long(d) = mean(NewRaw.Long(startix:endix));
+        Drifts_long.Lon360(d) = mean(NewRaw.Lon360(startix:endix));
         NewRaw.is_long_drift(startix:endix) = 1;
     end
 
@@ -993,6 +1006,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     end
     legend('Within Drift Filter','Below Drift Filter','Long Drift First Derivatives','Filtered-out Drifts','outline','Filtered Long Drifts')
 
+    
     linkaxes([ax1,ax2],'x');
     ylim([min(Filtered_Drifts_long.DriftRate)-0.5 max(Filtered_Drifts_long.DriftRate)+0.5]);
     xlim([min(NewRaw.time) max(NewRaw.time)])
@@ -1089,6 +1103,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how good is our (unfiltered) rest identifier at identifying long glides? 
             S0=confusionmat(NewRaw.is_long_glide(startix:endix)+1,NewRaw.is_long_drift(startix:endix)+1);
             if size(S0)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
 
@@ -1106,6 +1121,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how good is our (filtered) rest identifier at identifying long glides? 
             S=confusionmat(NewRaw.is_long_glide(startix:endix)+1,NewRaw.is_filtered_long_drift(startix:endix)+1);
             if size(S)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
 
@@ -1130,6 +1146,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how well does the first deriv/second deriv (alone) estimate the amount of sleep? 
             C00=confusionmat(NewRaw.is_sleep(startix:endix)+1,NewRaw.is_drift(startix:endix)+1);
             if size(C00)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
             TN_restsleeps00 = C00(1,1); FN_restsleeps00 = C00(2,1); FP_restsleeps00 = C00(1,2); TP_restsleeps00 = C00(2,2);
@@ -1143,6 +1160,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how good is our (unfiltered) rest identifier at estimating the amount of sleep? 
             C0=confusionmat(NewRaw.is_sleep(startix:endix)+1,NewRaw.is_long_drift(startix:endix)+1);
             if size(C0)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
             TN_restsleeps0 = C0(1,1); FN_restsleeps0 = C0(2,1); FP_restsleeps0 = C0(1,2); TP_restsleeps0 = C0(2,2);
@@ -1156,6 +1174,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how good is our (filtered) rest identifier at estimating the amount of sleep? 
             C=confusionmat(NewRaw.is_sleep(startix:endix)+1,NewRaw.is_filtered_long_drift(startix:endix)+1);
             if size(C)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
             TN_restsleeps = C(1,1); FN_restsleeps = C(2,1); FP_restsleeps = C(1,2); TP_restsleeps = C(2,2);
@@ -1169,6 +1188,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how well do glides approximate the amount of sleep an animal gets?
             G=confusionmat(NewRaw.is_sleep(startix:endix)+1,NewRaw.is_glide(startix:endix)+1);
             if size(G)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
             TN_glidesleeps0 = G(1,1); FN_glidesleeps0 = G(2,1); FP_glidesleeps0 = G(1,2); TP_glidesleeps0 = G(2,2);
@@ -1182,6 +1202,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
             % For each dive, how well do long glides approximate the amount of sleep an animal gets?
             G=confusionmat(NewRaw.is_sleep(startix:endix)+1,NewRaw.is_long_glide(startix:endix)+1);
             if size(G)==[1 1]
+                writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
                 continue
             end
             TN_glidesleeps = G(1,1); FN_glidesleeps = G(2,1); FP_glidesleeps = G(1,2); TP_glidesleeps = G(2,2);
@@ -1423,6 +1444,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     Daily_Activity.daily_recording = SamplingInterval * accumarray(Days, NewRaw.time(:), [], @numel)/3600;
     Daily_Activity.Lat = accumarray(Days, NewRaw.Lat(:), [], @mean);
     Daily_Activity.Long = accumarray(Days, NewRaw.Long(:), [], @mean);
+    Daily_Activity.Lon360 = accumarray(Days, NewRaw.Lon360(:), [], @mean);
     Daily_Activity.daily_diving = accumarray(Days, SamplingInterval * NewRaw.is_dive)/3600;
     Daily_Activity.daily_SI = accumarray(Days, SamplingInterval * NewRaw.is_SI)/3600;
     Daily_Activity.daily_long_SI = accumarray(Days, SamplingInterval* NewRaw.is_long_SI)/3600; 
@@ -1446,9 +1468,10 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     Full_Days_Daily_Activity = Daily_Activity(find(round(Daily_Activity.daily_recording)<=24 & Daily_Activity.daily_recording>15),:);
 
     if height(Full_Days_Daily_Activity) < 2
-        continue
         Seals_Used.Daily_Stats_Not_Provided(k) = 1;
         disp('Record too short to record summary statistics')
+        writetable(Seals_Used, strcat(TOPPID, '_',SEALID,'_','Seals_Used.csv'));
+        continue
     end 
     
     Seals_Used.Mean_filtered_long_drift_h(k) = mean(Full_Days_Daily_Activity.daily_filtered_long_drift);
@@ -1499,6 +1522,7 @@ parfor k=201:300 % 1 to 200 done 8/17/2022 must go to 406
     sunrise_Times.Sunset_time_of_day = 24*(sunrise_Times.sunsets - floor(sunrise_Times.sunsets));
 
     Daily_Activity = outerjoin(Daily_Activity, sunrise_Times, 'Keys','unique_Days','MergeKeys',true);
+    Daily_Activity = Daily_Activity(~isnan(Daily_Activity.daily_recording),:);
 
     disp('Section 05.D Complete: Sunrise and sunset times queried.')
 
