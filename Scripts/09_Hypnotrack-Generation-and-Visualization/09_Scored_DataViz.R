@@ -15,7 +15,9 @@ simple.sleep.col = c("Unscorable"="#D7D7D7", "Active Waking"= "#0c2c84","Quiet W
 
 hypnotrack_freq <-  1
 scorer <- 'JKB'
+SealID <- 'test33_HypoactiveHeidi'
 spirals <- read.csv(here("Data",paste(SealID,"_09_Hypnotrack_",hypnotrack_freq,"Hz_All_Sleep_Spirals.csv",sep="")))
+data <- read_csv(here("Data",paste("09_Hypnotrack_1Hz_ALL_ANIMALS.csv")))
 
 get_colors <- function(groups, group.col = palette()){
   groups <- as.factor(groups)
@@ -31,10 +33,10 @@ get_colors <- function(groups, group.col = palette()){
 library(rgl)
 rgl.clear( type = "shapes" )
 par3d(windowRect = c(20, 30, 1000, 1000))
-plotA <- spheres3d(x = spirals$standardsleepxposition, 
-                     y = spirals$standardsleepyposition, 
-                     z = spirals$standardsleepzposition, 
-                     color = get_colors(spirals$Simple_Sleep_Code, c("REM" = "#FCBE46", "SWS" = "#41b6c4")),
+plotA <- spheres3d(x = data$x, 
+                     y = data$y, 
+                     z = data$z, 
+                     color = get_colors(data$Simple_Sleep_Code, c("REM" = "#FCBE46", "SWS" = "#41b6c4")),
                      radius = 1)
 rglwidget(elementId = "plot3drgl")
 
@@ -53,6 +55,18 @@ if (interactive() && !in_pkgdown_example()) {
 }
 # }
 
+
+par3d(windowRect = c(20, 30, 1000, 1000))
+aspect3d(1.5,1,1)
+rgl.spheres(x = data$x, 
+            y = data$y, 
+            z = data$z, 
+            color = get_colors(data$Simple_Sleep_Code, c("REM" = "#FCBE46", "SWS" = "#41b6c4")),
+            radius = 1)
+rgl.bbox(color=c("#333377","black"), emission="#333377",
+         specular="#3333FF", shininess=5, alpha=0.2 )
+rgl.postscript("plot.pdf",fmt="pdf")
+rgl.snapshot(filename = "plot.png")
 
 par3d(windowRect = c(20, 30, 1000, 1000))
 aspect3d(1.5,1,1)
@@ -79,6 +93,8 @@ cube3d(x = spirals$standardxposition,
 rgl.bbox(color=c("#333377","black"), emission="#333377",
          specular="#3333FF", shininess=5, alpha=0.2 )
 
+
+hypnotrack <- data
 # READ IN HYPNOTRACK (exported from Matlab) ----
 hypnotrack_freq <-  5
 scorer <- 'JKB'
